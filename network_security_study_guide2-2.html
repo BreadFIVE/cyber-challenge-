@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IT & Internetworking Security — Study Guide</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#0d0f14; --surface:#151820; --surface2:#1c2030; --border:#252a38;
+  --accent:#00e5ff; --accent2:#ff6b35; --accent3:#a78bfa;
+  --text:#e2e8f0; --muted:#64748b; --success:#22c55e; --fail:#ef4444; --warn:#f59e0b;
+  --w4:#00e5ff; --w5:#a78bfa;
+  --mono:'Space Mono',monospace; --sans:'DM Sans',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;
+  background-image:radial-gradient(ellipse at 20% 0%,rgba(0,229,255,.06) 0%,transparent 50%),
+  radial-gradient(ellipse at 80% 100%,rgba(167,139,250,.05) 0%,transparent 50%);}
+header{padding:1.75rem 2rem 1.25rem;border-bottom:1px solid var(--border);
+  background:linear-gradient(135deg,rgba(0,229,255,.04),transparent);position:relative;}
+header::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,var(--accent),var(--accent3),transparent);}
+header h1{font-family:var(--mono);font-size:clamp(1rem,2.5vw,1.6rem);color:var(--accent);margin-bottom:.2rem;}
+header p{color:var(--muted);font-size:.82rem;text-transform:uppercase;letter-spacing:.08em;}
+.week-selector{display:flex;background:var(--surface2);border-bottom:2px solid var(--border);padding:.6rem 1.5rem;gap:.75rem;flex-wrap:wrap;align-items:center;}
+.week-btn{font-family:var(--mono);font-size:.72rem;padding:.55rem 1.1rem;background:var(--surface);border:1px solid var(--border);
+  color:var(--muted);cursor:pointer;border-radius:6px;transition:all .2s;text-transform:uppercase;letter-spacing:.05em;}
+.week-btn:hover{color:var(--text);border-color:var(--text);}
+.week-btn.active-w4{color:var(--w4);border-color:var(--w4);background:rgba(0,229,255,.07);}
+.week-btn.active-w5{color:var(--w5);border-color:var(--w5);background:rgba(167,139,250,.07);}
+.week-label{font-family:var(--mono);font-size:.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-right:.3rem;}
+.week-group{display:none;}
+.week-group.active{display:block;}
+.tab-bar{display:flex;background:var(--surface);border-bottom:1px solid var(--border);
+  overflow-x:auto;scrollbar-width:none;position:sticky;top:0;z-index:100;}
+.tab-bar::-webkit-scrollbar{display:none;}
+.tab-btn{font-family:var(--mono);font-size:.64rem;padding:.85rem .9rem;background:none;border:none;
+  color:var(--muted);cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;
+  transition:all .2s;text-transform:uppercase;letter-spacing:.04em;}
+.tab-btn:hover{color:var(--text);}
+.tab-btn.active-w4{color:var(--w4);border-bottom-color:var(--w4);}
+.tab-btn.active-w5{color:var(--w5);border-bottom-color:var(--w5);}
+.tab-btn.qtab-w4.active-w4{color:var(--accent2);border-bottom-color:var(--accent2);}
+.tab-btn.qtab-w5.active-w5{color:var(--accent2);border-bottom-color:var(--accent2);}
+.tab-btn.final-tab{color:var(--accent3);}
+.tab-btn.final-tab.active-w4,.tab-btn.final-tab.active-w5{color:var(--accent3);border-bottom-color:var(--accent3);}
+.panel{display:none;padding:1.75rem;max-width:960px;margin:0 auto;}
+.panel.active{display:block;}
+.section-title{font-family:var(--mono);font-size:.68rem;color:var(--accent);text-transform:uppercase;
+  letter-spacing:.12em;margin-bottom:1.25rem;padding-bottom:.5rem;border-bottom:1px solid var(--border);}
+.section-title.w5{color:var(--w5);}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:8px;
+  padding:1.25rem 1.25rem 1.25rem 1.5rem;margin-bottom:1rem;position:relative;}
+.card::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;
+  background:var(--accent);border-radius:8px 0 0 8px;}
+.card.o::before{background:var(--accent2);}.card.p::before{background:var(--accent3);}
+.card.y::before{background:var(--warn);}.card.g::before{background:var(--success);}
+.card.w5::before{background:var(--w5);}
+.card h3{font-family:var(--mono);font-size:.85rem;color:var(--accent);margin-bottom:.6rem;}
+.card.o h3{color:var(--accent2);}.card.p h3{color:var(--accent3);}.card.y h3{color:var(--warn);}
+.card.g h3{color:var(--success);}.card.w5 h3{color:var(--w5);}
+.card p,.card li{font-size:.9rem;line-height:1.7;color:#b0bcd4;}
+.card ul{padding-left:1.1rem;}.card li{margin-bottom:.3rem;}
+.tag{display:inline-block;background:rgba(0,229,255,.1);color:var(--accent);
+  border:1px solid rgba(0,229,255,.2);border-radius:4px;padding:.1rem .45rem;
+  font-family:var(--mono);font-size:.68rem;margin-right:.35rem;margin-bottom:.35rem;}
+.tag.o{background:rgba(255,107,53,.1);color:var(--accent2);border-color:rgba(255,107,53,.2);}
+.tag.p{background:rgba(167,139,250,.1);color:var(--accent3);border-color:rgba(167,139,250,.2);}
+.port-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:.6rem;margin-top:.7rem;}
+.port-item{background:var(--surface2);border:1px solid var(--border);border-radius:6px;
+  padding:.65rem;display:flex;align-items:center;gap:.6rem;}
+.port-num{font-family:var(--mono);font-size:.95rem;color:var(--accent);min-width:2.4rem;font-weight:700;}
+.port-desc{font-size:.8rem;color:var(--muted);}
+.ctable{width:100%;border-collapse:collapse;margin-top:.6rem;font-size:.83rem;}
+.ctable th{background:var(--surface2);color:var(--accent);font-family:var(--mono);font-size:.68rem;
+  text-transform:uppercase;letter-spacing:.07em;padding:.7rem .9rem;text-align:left;border-bottom:1px solid var(--border);}
+.ctable.w5 th{color:var(--w5);}
+.ctable td{padding:.65rem .9rem;border-bottom:1px solid rgba(37,42,56,.5);color:#b0bcd4;vertical-align:top;line-height:1.5;}
+.ctable tr:last-child td{border-bottom:none;}
+.lvl{display:inline-block;padding:.12rem .5rem;border-radius:20px;font-size:.68rem;font-family:var(--mono);font-weight:700;}
+.lvl-l{background:rgba(239,68,68,.15);color:#ef4444;}.lvl-m{background:rgba(245,158,11,.15);color:#f59e0b;}
+.lvl-h{background:rgba(34,197,94,.15);color:#22c55e;}
+.callout{background:rgba(0,229,255,.05);border:1px solid rgba(0,229,255,.15);border-radius:6px;
+  padding:.9rem 1.1rem;margin:.9rem 0;font-size:.86rem;color:#94d8e8;line-height:1.6;}
+.callout.warn{background:rgba(245,158,11,.05);border-color:rgba(245,158,11,.2);color:#fcd34d;}
+.callout.w5{background:rgba(167,139,250,.05);border-color:rgba(167,139,250,.2);color:#c4b5fd;}
+/* QUIZ */
+.quiz-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;flex-wrap:wrap;gap:.75rem;}
+.quiz-header h2{font-family:var(--mono);font-size:.82rem;color:var(--accent2);text-transform:uppercase;letter-spacing:.08em;}
+.qscore{font-family:var(--mono);font-size:.78rem;color:var(--muted);}
+.q-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:1.25rem;margin-bottom:1.1rem;}
+.q-num{font-family:var(--mono);font-size:.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.5rem;}
+.q-type-tag{display:inline-block;font-family:var(--mono);font-size:.62rem;padding:.08rem .45rem;border-radius:3px;
+  margin-left:.4rem;background:rgba(167,139,250,.1);color:var(--accent3);border:1px solid rgba(167,139,250,.2);}
+.q-topic-tag{display:inline-block;font-family:var(--mono);font-size:.62rem;padding:.08rem .45rem;border-radius:3px;
+  margin-left:.4rem;background:rgba(0,229,255,.07);color:var(--accent);border:1px solid rgba(0,229,255,.15);}
+.q-text{font-size:.95rem;line-height:1.6;color:var(--text);margin-bottom:.9rem;}
+.mc-opt{display:flex;align-items:flex-start;gap:.65rem;padding:.65rem .9rem;border:1px solid var(--border);
+  border-radius:6px;margin-bottom:.45rem;cursor:pointer;transition:all .15s;font-size:.86rem;color:#b0bcd4;
+  background:var(--surface2);user-select:none;}
+.mc-opt:hover{border-color:var(--accent);color:var(--text);}
+.mc-opt.correct{border-color:var(--success)!important;background:rgba(34,197,94,.08)!important;color:var(--success)!important;}
+.mc-opt.wrong{border-color:var(--fail)!important;background:rgba(239,68,68,.08)!important;color:var(--fail)!important;}
+.mc-opt.disabled{pointer-events:none;}
+.mc-letter{font-family:var(--mono);font-size:.72rem;color:var(--muted);min-width:1.1rem;padding-top:.05rem;flex-shrink:0;}
+.text-wrap{display:flex;gap:.6rem;flex-wrap:wrap;align-items:flex-start;}
+.t-input{background:var(--surface2);border:1px solid var(--border);border-radius:6px;
+  padding:.6rem .9rem;color:var(--text);font-family:var(--mono);font-size:.82rem;
+  min-width:180px;flex:1;outline:none;transition:border-color .15s;}
+.t-input:focus{border-color:var(--accent);}
+.t-input.correct{border-color:var(--success)!important;background:rgba(34,197,94,.06)!important;color:var(--success)!important;}
+.t-input.wrong{border-color:var(--fail)!important;background:rgba(239,68,68,.06)!important;color:var(--fail)!important;}
+.chk-btn{background:var(--accent2);color:#fff;border:none;border-radius:6px;padding:.6rem 1.1rem;
+  font-family:var(--mono);font-size:.74rem;cursor:pointer;text-transform:uppercase;letter-spacing:.05em;}
+.chk-btn:hover{opacity:.85;}.chk-btn:disabled{opacity:.4;cursor:not-allowed;}
+.order-list{list-style:none;padding:0;margin-bottom:.7rem;}
+.order-item{display:flex;align-items:center;gap:.65rem;padding:.6rem .9rem;background:var(--surface2);
+  border:1px solid var(--border);border-radius:6px;margin-bottom:.35rem;cursor:grab;
+  user-select:none;font-size:.86rem;color:#b0bcd4;transition:border-color .15s;}
+.order-item:hover{border-color:var(--accent3);}
+.order-item.dragging{opacity:.4;}
+.order-item.dragover{border-color:var(--accent);background:rgba(0,229,255,.06);}
+.drag-handle{color:var(--muted);font-size:.8rem;flex-shrink:0;}
+.q-feedback{margin-top:.65rem;padding:.6rem .85rem;border-radius:6px;font-size:.82rem;display:none;line-height:1.5;}
+.q-feedback.show{display:block;}
+.q-feedback.correct{background:rgba(34,197,94,.1);color:#86efac;border:1px solid rgba(34,197,94,.2);}
+.q-feedback.wrong{background:rgba(239,68,68,.1);color:#fca5a5;border:1px solid rgba(239,68,68,.2);}
+.quiz-controls{display:flex;gap:.75rem;margin-top:1.5rem;}
+.reset-btn{background:transparent;color:var(--muted);border:1px solid var(--border);border-radius:6px;
+  padding:.6rem 1.25rem;font-family:var(--mono);font-size:.74rem;cursor:pointer;
+  text-transform:uppercase;letter-spacing:.05em;transition:all .15s;}
+.reset-btn:hover{color:var(--text);border-color:var(--text);}
+.score-box{background:var(--surface);border:1px solid var(--border);border-radius:8px;
+  padding:1.1rem 1.35rem;margin-top:1.25rem;display:none;font-family:var(--mono);}
+.score-box.show{display:block;}
+.score-big{font-size:2.2rem;color:var(--accent);margin-bottom:.2rem;}
+.score-lbl{font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;}
+@media(max-width:600px){.panel{padding:1rem;}.tab-btn{padding:.7rem .6rem;font-size:.58rem;}}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>// IT &amp; Internetworking Security</h1>
+  <p>Lecture Study Guide</p>
+</header>
+
+<!-- Week Selector -->
+<div class="week-selector">
+  <span class="week-label">Select Week:</span>
+  <button class="week-btn active-w4" id="weekBtn4" onclick="switchWeek(4)">Firewalls</button>
+  <button class="week-btn" id="weekBtn5" onclick="switchWeek(5)">IDS &amp; IPS</button>
+</div>
+
+<!-- ==================== WEEK 4 ==================== -->
+<div class="week-group active" id="week4">
+  <div class="tab-bar" id="tabBar4">
+    <button class="tab-btn active-w4" data-tab="w4t1" data-week="4">01 Network Regions</button>
+    <button class="tab-btn" data-tab="w4t2" data-week="4">02 Packet Filtering</button>
+    <button class="tab-btn" data-tab="w4t3" data-week="4">03 Firewall Types</button>
+    <button class="tab-btn" data-tab="w4t4" data-week="4">04 Use &amp; Config</button>
+    <button class="tab-btn" data-tab="w4t5" data-week="4">05 Limitations</button>
+    <button class="tab-btn" data-tab="w4t6" data-week="4">06 Real-World</button>
+    <button class="tab-btn qtab-w4" data-tab="w4q1" data-week="4">Quiz 01</button>
+    <button class="tab-btn qtab-w4" data-tab="w4q2" data-week="4">Quiz 02</button>
+    <button class="tab-btn qtab-w4" data-tab="w4q3" data-week="4">Quiz 03</button>
+    <button class="tab-btn qtab-w4" data-tab="w4q4" data-week="4">Quiz 04</button>
+    <button class="tab-btn qtab-w4" data-tab="w4q5" data-week="4">Quiz 05</button>
+    <button class="tab-btn final-tab" data-tab="w4qfinal" data-week="4">⬡ Week 4 Final</button>
+  </div>
+
+  <!-- W4 TOPIC PANELS -->
+  <div class="panel active" id="panel-w4t1">
+    <div class="section-title">// 01 — Network Regions &amp; Boundaries</div>
+    <div class="card">
+      <h3>The Three Network Regions</h3>
+      <ul>
+        <li><span class="tag">Internet</span> The external, untrusted global network. All traffic from here is considered potentially hostile.</li>
+        <li><span class="tag">Intranet</span> The internal, trusted private network — file servers, mail servers, user machines, internal DNS.</li>
+        <li><span class="tag">DMZ</span> Demilitarized Zone — a semi-trusted buffer zone hosting publicly accessible servers (web, mail forwarding, external DNS) isolated from the intranet.</li>
+      </ul>
+    </div>
+    <div class="card o">
+      <h3>Network Boundaries</h3>
+      <ul>
+        <li><strong style="color:var(--accent2)">Firewall</strong> — filters packets between regions based on rules.</li>
+        <li><strong style="color:var(--accent2)">Proxy</strong> — an intermediary that makes requests on behalf of clients, adding separation and control.</li>
+      </ul>
+    </div>
+    <div class="card p">
+      <h3>Dual-Firewall DMZ Architecture</h3>
+      <ul>
+        <li><strong>Outer firewall</strong> — between internet and DMZ; allows only public traffic (HTTP, SMTP) into the DMZ.</li>
+        <li><strong>Inner firewall</strong> — between DMZ and intranet; second line of defence. Compromise of a DMZ server does not mean compromise of the intranet.</li>
+        <li>DMZ contains: Web Server, Mail Forwarding, DNS (external).</li>
+        <li>Intranet contains: File Server, Web Server, Mail Server, DNS (internal), User machines.</li>
+      </ul>
+    </div>
+    <div class="callout"><strong>Key idea:</strong> The DMZ ensures publicly accessible services cannot directly reach the internal network. Even if a DMZ host is compromised, the attacker still faces the inner firewall.</div>
+  </div>
+
+  <div class="panel" id="panel-w4t2">
+    <div class="section-title">// 02 — Packet Filtering</div>
+    <div class="card">
+      <h3>What a Packet Filter Inspects</h3>
+      <p>Uses transport-layer information only:</p>
+      <ul style="margin-top:.6rem">
+        <li>IP Source Address &amp; Destination Address</li>
+        <li>Protocol (TCP, UDP, ICMP, etc.)</li>
+        <li>TCP or UDP source &amp; destination ports</li>
+        <li>TCP Flags (SYN, ACK, FIN, RST, PSH, etc.)</li>
+        <li>ICMP message type</li>
+      </ul>
+    </div>
+    <div class="card o">
+      <h3>Port Numbering</h3>
+      <ul>
+        <li>Server ports: <strong>below 1024</strong> (permanently assigned)</li>
+        <li>Client ports: <strong>1024–16383</strong> (dynamically assigned)</li>
+      </ul>
+      <div class="port-grid">
+        <div class="port-item"><span class="port-num">20/21</span><span class="port-desc">FTP</span></div>
+        <div class="port-item"><span class="port-num">23</span><span class="port-desc">Telnet</span></div>
+        <div class="port-item"><span class="port-num">25</span><span class="port-desc">SMTP (send email)</span></div>
+        <div class="port-item"><span class="port-num">53</span><span class="port-desc">DNS</span></div>
+        <div class="port-item"><span class="port-num">80</span><span class="port-desc">HTTP</span></div>
+        <div class="port-item"><span class="port-num">110</span><span class="port-desc">POP3</span></div>
+        <div class="port-item"><span class="port-num">143</span><span class="port-desc">IMAP</span></div>
+        <div class="port-item"><span class="port-num">443</span><span class="port-desc">HTTPS</span></div>
+      </div>
+    </div>
+    <div class="card p">
+      <h3>Stateless vs Stateful Filtering</h3>
+      <p><strong style="color:var(--accent3)">Stateless:</strong> Ports &gt;1024 must stay open for client replies — a weakness, as any attacker can target those high ports.</p>
+      <p style="margin-top:.65rem"><strong style="color:var(--accent)">Stateful:</strong> Firewall remembers outgoing requests. Incoming high-port traffic only allowed if an internal machine initiated an outgoing request on a corresponding low port.</p>
+    </div>
+    <div class="card y">
+      <h3>Packet Filtering Issues</h3>
+      <ul>
+        <li><strong>Stateful filtering</strong> — basic filters lack session awareness</li>
+        <li><strong>Encapsulation</strong> — address translation (NAT) and tunnelling create complications</li>
+        <li><strong>Fragmentation</strong> — fragmented packets can bypass port-based rules</li>
+      </ul>
+    </div>
+    <div class="card g">
+      <h3>Packet Fragmentation Attack</h3>
+      <p>Firewall blocks port 23 but allows port 25:</p>
+      <ul style="margin-top:.6rem">
+        <li><strong>Packet 1:</strong> Offset=0, MF=1, Dest Port=25 → firewall allows it</li>
+        <li><strong>Packet 2:</strong> Offset=1 (overwrites first packet), MF=0, Dest Port=23 → firewall ignores TCP header (treats as data fragment) → passes through</li>
+        <li><strong>Result:</strong> Host reassembles packets; traffic arrives at port 23 — rule bypassed!</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="panel" id="panel-w4t3">
+    <div class="section-title">// 03 — Types of Firewall</div>
+    <table class="ctable" style="margin-bottom:1.25rem">
+      <thead><tr><th>Type</th><th>How it Works</th><th>Security</th></tr></thead>
+      <tbody>
+        <tr><td><strong style="color:var(--accent)">1. Packet Filter</strong></td><td>Examines IP/TCP headers, routes packets, applies allow/deny rules per packet.</td><td><span class="lvl lvl-l">Low</span></td></tr>
+        <tr><td><strong style="color:var(--accent2)">2. Circuit-level Proxy</strong></td><td>Terminates incoming TCP connections, re-creates new connection to server if allowed.</td><td><span class="lvl lvl-m">Low–Med</span></td></tr>
+        <tr><td><strong style="color:var(--accent3)">3. Stateful Packet Filter</strong></td><td>Tracks TCP state (SYN/ACK). Rules in one direction only; replies handled automatically.</td><td><span class="lvl lvl-m">Med–High</span></td></tr>
+        <tr><td><strong style="color:var(--success)">4. Application-level Proxy</strong></td><td>Full client+server per protocol. Validates every request at application layer.</td><td><span class="lvl lvl-h">High</span></td></tr>
+      </tbody>
+    </table>
+    <div class="card"><h3>Packet Filter</h3><ul><li>Rules specify allowed/dropped packets in both directions</li><li>Rules use source/destination IP and TCP/UDP ports</li><li>FTP very difficult to support securely</li><li><span class="lvl lvl-l">Low security</span></li></ul></div>
+    <div class="card o"><h3>Circuit-level Proxy</h3><ul><li>Packets are NOT routed — proxy terminates them</li><li>Allowed connections generate a new connection from firewall to server</li><li>Client never connects directly to server</li><li><span class="lvl lvl-m">Low–Medium security</span></li></ul></div>
+    <div class="card p"><h3>Stateful Packet Filter</h3><ul><li>Understands SYN, SYN-ACK, ACK handshake</li><li>Rules only need one direction (client→server); replies auto-allowed</li><li>Supports FTP, IRC, H.323</li><li><span class="lvl lvl-m">Medium–High security</span></li></ul></div>
+    <div class="card g"><h3>Application-level Proxy</h3><ul><li>Full server &amp; client implementation per protocol (HTTP, FTP, SMTP proxies)</li><li>Flow: Client → Firewall (validates) → Firewall → Server → back through Firewall</li><li>Can scan SMTP email for viruses (understands MIME, Zip)</li><li>Flexible but introduces network delays</li><li><span class="lvl lvl-h">High security</span></li></ul></div>
+    <div class="card y"><h3>Telephone Analogy</h3><p><strong>Packet/circuit/stateful filters</strong> = telephone call-barring by number (block/allow by who is calling).</p><p style="margin-top:.6rem"><strong>Application proxy</strong> = listening to the conversation — but conversations may be encoded or in a foreign language (encryption).</p></div>
+  </div>
+
+  <div class="panel" id="panel-w4t4">
+    <div class="section-title">// 04 — Firewall Use, Configuration &amp; ASA</div>
+    <div class="card"><h3>What Firewalls Do</h3><ul><li>Control traffic to/from the protected network</li><li>Allow or block access to services (internal and external)</li><li>Enforce authentication before allowing service access</li><li>Monitor network traffic</li><li>Restrict internal users from certain external services (security, productivity, cost)</li></ul></div>
+    <div class="card o"><h3>Two Configuration Approaches</h3>
+      <p><strong style="color:var(--fail)">1. Allow all, block some (blocklist)</strong> — easy to make mistakes; forgotten rules stay open; less secure.</p>
+      <p style="margin-top:.6rem"><strong style="color:var(--success)">2. Block all, allow some (allowlist)</strong> — much more secure; forgotten rules cause complaints so you notice and fix them. Recommended.</p>
+    </div>
+    <div class="card p"><h3>Typical Firewall Ruleset</h3><ul><li>Allow internal → internet: HTTP, FTP, SSH, DNS</li><li>Allow reply packets</li><li>Allow anywhere → Mail server: TCP port 25 only</li><li>Allow Mail server → internet: SMTP, DNS</li><li>Allow inside → Mail server: SMTP, POP3</li><li><strong>Block everything else</strong></li></ul></div>
+    <div class="card y"><h3>Problems Firewalls Create</h3><ul><li>Some services break because they are blocked — users complain</li><li>Network diagnostics may be harder</li><li>NAT can cause confusion</li><li>Some protocols are hard to support: FTP, IRC, H.323</li></ul></div>
+    <div class="card"><h3>ASA Firewall Modes</h3><ul>
+      <li><span class="tag">Routed Mode</span> Layer 3 — acts as NAT boundary, separate IPs per interface.</li>
+      <li><span class="tag o">Transparent Mode</span> Layer 2 — "bump in the wire" / stealth firewall, no NAT, existing IPs unchanged.</li>
+    </ul></div>
+    <div class="card o"><h3>ASA CLI Modes</h3><ul style="font-family:var(--mono);font-size:.8rem">
+      <li><strong>ciscoasa&gt;</strong> — User EXEC mode</li>
+      <li><strong>ciscoasa#</strong> — Privileged EXEC (after <code>enable</code>)</li>
+      <li><strong>ciscoasa(config)#</strong> — Global config (after <code>configure terminal</code>)</li>
+      <li><strong>ciscoasa(config-if)#</strong> — Sub-configuration (interface level)</li>
+    </ul><div class="callout" style="margin-top:.75rem">Key: IOS <code>do</code> command not needed on ASA. Stop <code>show</code> output with <strong>Q</strong>, not Ctrl+C.</div></div>
+    <div class="card p"><h3>Key ASA Commands vs IOS</h3>
+      <table class="ctable"><thead><tr><th>IOS</th><th>ASA Equivalent</th></tr></thead><tbody>
+        <tr><td>enable secret password</td><td>enable password password</td></tr>
+        <tr><td>line vty 0-4 / password / login</td><td>passwd password</td></tr>
+        <tr><td>ip route</td><td>route outside</td></tr>
+        <tr><td>show ip interfaces brief</td><td>show interfaces ip brief</td></tr>
+        <tr><td>show ip route</td><td>show route</td></tr>
+        <tr><td>show ip nat translations</td><td>show xlate</td></tr>
+        <tr><td>copy running-config startup-config</td><td>write [memory]</td></tr>
+        <tr><td>erase startup-config</td><td>write erase</td></tr>
+      </tbody></table>
+    </div>
+  </div>
+
+  <div class="panel" id="panel-w4t5">
+    <div class="section-title">// 05 — Limitations, Bypasses &amp; What Firewalls Can't Do</div>
+    <div class="card"><h3>No Content-Based Filtering (Packet Filters)</h3><ul><li>Email allowed → virus-infected emails also allowed</li><li>Web access allowed → malicious websites accessible</li><li>Web access for browser → also enabled for worms like Nimda</li></ul></div>
+    <div class="card o"><h3>HTTP Tunnelling Problem</h3><p>More services now use TCP port 80 (HTTP) — not just web pages. This makes it hard for firewalls to distinguish legitimate web traffic from tunnelled applications. Even application proxies may not catch this.</p></div>
+    <div class="card p"><h3>Encryption Challenge</h3><ul><li>HTTPS and SSH traffic <strong>cannot be inspected or filtered</strong></li><li>SSH/TLS are end-to-end — no middlebox can decode the payload</li><li>Encryption is growing (privacy, e-commerce)</li><li>Firewalls can see the port but not the content</li></ul></div>
+    <div class="card g"><h3>Firewall Bypass Methods</h3><ul><li><strong>Direct plugin / external link</strong> — traffic not passing through firewall cannot be blocked</li><li><strong>Poor configuration</strong> — overly permissive rules (e.g. allowing all traffic on port 53)</li><li><strong>Inbound/outbound asymmetry</strong> — outbound-initiated connections work both ways</li><li><strong>Protocol tunnelling</strong> — wrapping a blocked protocol inside an allowed one</li></ul></div>
+    <div class="card y"><h3>Core Limitations Summary</h3><ul><li><strong>IP spoofing</strong> — router cannot verify true packet origin</li><li><strong>Multiple app gateways</strong> — each protocol needs its own proxy; clients must be configured</li><li><strong>All-or-nothing UDP</strong> — filters often can only fully allow or block UDP</li><li><strong>Security vs. connectivity trade-off</strong> — tighter rules mean less usability</li><li>Many highly protected sites still suffer attacks</li></ul></div>
+    <div class="callout warn"><strong>Key principle:</strong> A firewall is one layer of defence-in-depth, not a silver bullet. Many highly protected sites still suffer successful attacks.</div>
+  </div>
+
+  <div class="panel" id="panel-w4t6">
+    <div class="section-title">// 06 — Real-World Firewalls</div>
+    <div class="card"><h3>Check Point Firewall</h3><ul><li>Market leader in enterprise firewalls</li><li>Type: <span class="tag">Stateful Packet Filter</span> + some proxy + authentication</li><li>Cost: ~£10,000s</li><li>Typically runs under MS Windows (unreliable, low performance, questionable security as host)</li><li>Alternative platform: Nokia — even more expensive</li></ul></div>
+    <div class="card o"><h3>Symantec Raptor</h3><ul><li>Type: <span class="tag o">Application Proxy</span> + some packet filtering</li><li>Cost: ~£10,000s</li><li>Runs under MS Windows</li></ul></div>
+    <div class="card p"><h3>Cisco PIX / ASA</h3><ul><li>Type: <span class="tag">Stateful Packet Filter</span></li><li>Cost: ~£1,000s (cheaper than Check Point)</li><li>High performance</li><li>Inconvenient command-line user interface</li></ul></div>
+    <div class="card y"><h3>ASA 5505 Hardware</h3><ul><li>8 built-in switch ports (Fast Ethernet), ports 0–1 PoE capable</li><li>Supports up to 3 VLANs (Outside, Inside, DMZ)</li><li>Security Services Card (SSC) expansion slot</li><li>USB ports, console port, auxiliary port</li></ul></div>
+    <div class="card g"><h3>ASA 5510 Hardware</h3><ul><li>1 Security Services Module (SSM) slot for IPS/AV</li><li>2 USB 2.0 ports, out-of-band (OOB) management interface</li><li>4 Fast Ethernet interfaces</li><li>Flash card slot, serial console port, auxiliary port</li><li>LEDs: Power, Status, Active, VPN, Flash</li></ul></div>
+    <div class="card"><h3>ASA Deployment Scenarios</h3><ul><li><strong>Small Branch:</strong> Single ASA 5505, internet (VLAN 2) + inside (VLAN 1) — workstations, printer, IP phones</li><li><strong>Small Business:</strong> ASA 5505 with 3 VLANs — Outside, DMZ (web server), Inside</li><li><strong>Enterprise:</strong> Central corporate ASA + remote branch ASA 5505s connected via IPsec VPN over internet</li></ul></div>
+  </div>
+
+  <!-- W4 QUIZ PANELS -->
+  <div class="panel" id="panel-w4q1"><div class="quiz-header"><h2>Quiz 01 — Network Regions</h2><span class="qscore" id="sc-w4q1">0 answered</span></div><div id="qc-w4q1"></div><div class="quiz-controls"><button class="reset-btn" onclick="resetQuiz('w4q1')">↺ Reset</button></div><div class="score-box" id="sb-w4q1"></div></div>
+  <div class="panel" id="panel-w4q2"><div class="quiz-header"><h2>Quiz 02 — Packet Filtering</h2><span class="qscore" id="sc-w4q2">0 answered</span></div><div id="qc-w4q2"></div><div class="quiz-controls"><button class="reset-btn" onclick="resetQuiz('w4q2')">↺ Reset</button></div><div class="score-box" id="sb-w4q2"></div></div>
+  <div class="panel" id="panel-w4q3"><div class="quiz-header"><h2>Quiz 03 — Firewall Types</h2><span class="qscore" id="sc-w4q3">0 answered</span></div><div id="qc-w4q3"></div><div class="quiz-controls"><button class="reset-btn" onclick="resetQuiz('w4q3')">↺ Reset</button></div><div class="score-box" id="sb-w4q3"></div></div>
+  <div class="panel" id="panel-w4q4"><div class="quiz-header"><h2>Quiz 04 — Use &amp; Config</h2><span class="qscore" id="sc-w4q4">0 answered</span></div><div id="qc-w4q4"></div><div class="quiz-controls"><button class="reset-btn" onclick="resetQuiz('w4q4')">↺ Reset</button></div><div class="score-box" id="sb-w4q4"></div></div>
+  <div class="panel" id="panel-w4q5"><div class="quiz-header"><h2>Quiz 05 — Limitations &amp; Real-World</h2><span class="qscore" id="sc-w4q5">0 answered</span></div><div id="qc-w4q5"></div><div class="quiz-controls"><button class="reset-btn" onclick="resetQuiz('w4q5')">↺ Reset</button></div><div class="score-box" id="sb-w4q5"></div></div>
+  <div class="panel" id="panel-w4qfinal"><div class="quiz-header"><h2>⬡ Week 4 Final Quiz (20 Questions)</h2><span class="qscore" id="sc-w4qfinal">0 answered</span></div><div id="qc-w4qfinal"></div><div class="quiz-controls"><button class="reset-btn" onclick="resetQuiz('w4qfinal')">↺ Reset</button></div><div class="score-box" id="sb-w4qfinal"></div></div>
+</div><!-- end week4 -->
+
+<!-- ==================== WEEK 5 ==================== -->
+<div class="week-group" id="week5">
+  <div class="tab-bar" id="tabBar5">
+    <button class="tab-btn active-w5" data-tab="w5t1" data-week="5">01 Network Intrusion</button>
+    <button class="tab-btn" data-tab="w5t2" data-week="5">02 IDS vs IPS</button>
+    <button class="tab-btn" data-tab="w5t3" data-week="5">03 Detection Methods</button>
+    <button class="tab-btn" data-tab="w5t4" data-week="5">04 Signatures</button>
+    <button class="tab-btn" data-tab="w5t5" data-week="5">05 Trigger Types</button>
+    <button class="tab-btn" data-tab="w5t6" data-week="5">06 IPS Actions</button>
+    <button class="tab-btn qtab-w5" data-tab="w5q1" data-week="5">Quiz 01</button>
+    <button class="tab-btn qtab-w5" data-tab="w5q2" data-week="5">Quiz 02</button>
+    <button class="tab-btn qtab-w5" data-tab="w5q3" data-week="5">Quiz 03</button>
+    <button class="tab-btn qtab-w5" data-tab="w5q4" data-week="5">Quiz 04</button>
+    <button class="tab-btn qtab-w5" data-tab="w5q5" data-week="5">Quiz 05</button>
+    <button class="tab-btn final-tab" data-tab="w5qfinal" data-week="5">⬡ Week 5 Final</button>
+  </div>
+
+  <!-- W5 TOPIC PANELS -->
+  <div class="panel active" id="panel-w5t1">
+    <div class="section-title w5">// 01 — Network Intrusion: The 5 Stages</div>
+    <div class="callout w5">Networks must be able to instantly <strong>recognise</strong> and <strong>mitigate</strong> threats. Understanding how attackers operate is the foundation of intrusion detection.</div>
+    <div class="card w5">
+      <h3>Stage 1 — Reconnaissance</h3>
+      <p>Scan the network to:</p>
+      <ul style="margin-top:.5rem">
+        <li>Locate which IP addresses are in use</li>
+        <li>Identify what operating system is running</li>
+        <li>Discover which TCP or UDP ports are "open" (being listened to by servers)</li>
+      </ul>
+      <div style="margin-top:.75rem"><span class="tag p">Tool: nmap</span> Example: <code style="font-size:.78rem;color:var(--accent)">nmap -sS -P0 -vv -p 21,22,25,110,443 209.162.185.100</code></div>
+    </div>
+    <div class="card o">
+      <h3>Stage 2 — Access</h3>
+      <p>Run "Exploit" scripts against open ports identified during reconnaissance.</p>
+    </div>
+    <div class="card p">
+      <h3>Stage 3 — Elevate</h3>
+      <p>Elevate privileges to "root" or "admin" privileges on the compromised system.</p>
+    </div>
+    <div class="card y">
+      <h3>Stage 4 — Root Kit</h3>
+      <p>Crackers gain free access without being noticed by auditing systems. Achieved via a root kit or simple backdoor. Log files (<code>/var/log/secure</code> on Linux, Event Viewer on Windows, Console on Mac) would otherwise expose login activity.</p>
+    </div>
+    <div class="card g">
+      <h3>Stage 5 — Utilize</h3>
+      <p>Use IRC (Internet Relay Chat) to invite more hackers, conduct ID theft, Warez distribution, or recruit machines into a Botnet.</p>
+    </div>
+    <div class="card">
+      <h3>nmap Scan Output — What it Reveals</h3>
+      <ul>
+        <li><strong>filtered</strong> — port blocked by firewall (e.g. FTP port 21)</li>
+        <li><strong>open</strong> — port is listening (e.g. SSH port 22, HTTPS port 443)</li>
+        <li>Telnet can connect to any port to reveal service banners (e.g. SSH version)</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="panel" id="panel-w5t2">
+    <div class="section-title w5">// 02 — IDS vs IPS</div>
+    <div class="card w5">
+      <h3>Two Generations of Protection</h3>
+      <ul>
+        <li><strong style="color:var(--w5)">IDS — Intrusion Detection System</strong> — First generation. Detects and alerts. Operates in <em>promiscuous mode</em> (passive, out-of-band).</li>
+        <li><strong style="color:var(--accent2)">IPS — Intrusion Prevention System</strong> — Second generation. Detects and actively blocks. Operates <em>inline</em> with network traffic.</li>
+      </ul>
+    </div>
+    <div class="card o">
+      <h3>Intrusion Prevention Goals</h3>
+      <ul>
+        <li><strong>Detection</strong> — identify the intrusion</li>
+        <li><strong>Prevention</strong> — stop it before damage</li>
+        <li><strong>Reaction</strong> — respond and recover</li>
+      </ul>
+    </div>
+    <div class="card p">
+      <h3>IDS — How it Works (Promiscuous Mode)</h3>
+      <ul>
+        <li>Traffic is mirrored/copied to the IDS sensor (traffic still flows normally)</li>
+        <li>Sensor detects the attack but cannot stop it mid-stream</li>
+        <li>Alerts the management console</li>
+        <li>Attack may still reach the target</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>IPS — How it Works (Inline Mode)</h3>
+      <ul>
+        <li>Sensor sits directly in the traffic path</li>
+        <li>Can intercept and drop malicious packets before they reach the target</li>
+        <li>Traffic sent to a "bit bucket" (discarded)</li>
+        <li>Management console is alerted</li>
+      </ul>
+    </div>
+    <div class="card y">
+      <h3>Comparing IDS and IPS</h3>
+      <table class="ctable w5">
+        <thead><tr><th>Feature</th><th>IDS (Promiscuous)</th><th>IPS (Inline)</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Advantages</strong></td><td>No network impact (latency/jitter). Sensor failure has no network impact.</td><td>Stops trigger packets. Can use stream normalisation techniques.</td></tr>
+          <tr><td><strong>Disadvantages</strong></td><td>Cannot stop trigger packets. Needs correct tuning. More vulnerable to evasion.</td><td>Some latency/jitter introduced. Sensor failure/overload impacts the network.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout w5"><strong>Key:</strong> IDS and IPS are not mutually exclusive — they can complement each other. A network-based IPS should be inline to defend against fast-moving worms and viruses.</div>
+    <div class="card g">
+      <h3>Network-Based IPS Placement</h3>
+      <ul>
+        <li>Sensors placed at multiple points: inside corporate network, between corporate network and firewall, in the DMZ area</li>
+        <li>Management server controls all sensors centrally</li>
+        <li>Works alongside web server, DNS server, and the untrusted network boundary</li>
+      </ul>
+    </div>
+    <div class="card o">
+      <h3>Detection Methods Overview</h3>
+      <ul>
+        <li><strong>Misuse detection</strong> — matches known attack patterns (signatures)</li>
+        <li><strong>Anomaly detection</strong> — flags behaviour that deviates from a normal baseline</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="panel" id="panel-w5t3">
+    <div class="section-title w5">// 03 — Detection Methods: Misuse vs Anomaly</div>
+    <div class="card w5">
+      <h3>Misuse Detection</h3>
+      <p>Compares activity against a database of known attack signatures. Fires when a known bad pattern is matched.</p>
+      <ul style="margin-top:.5rem">
+        <li>Examples: Root password modified while admin not logged in → <strong>Misuse</strong></li>
+        <li>UDP packet to port 1434 (SQL Slammer worm) → <strong>Misuse</strong></li>
+      </ul>
+    </div>
+    <div class="card o">
+      <h3>Anomaly Detection</h3>
+      <p>Flags activity that deviates from a learned "normal" profile — can detect unknown attacks.</p>
+      <ul style="margin-top:.5rem">
+        <li>Four failed login attempts → <strong>Anomaly</strong></li>
+        <li>Failed connections on 50 sequential ports → <strong>Anomaly</strong></li>
+        <li>User who normally logs in at 10am from a UK dorm logs in at 4:30am from a Russian IP → <strong>Anomaly</strong></li>
+      </ul>
+    </div>
+    <div class="card p">
+      <h3>Misuse or Anomaly? Classification Table</h3>
+      <table class="ctable w5">
+        <thead><tr><th>Scenario</th><th>Type</th></tr></thead>
+        <tbody>
+          <tr><td>Root password modified, admin not logged in</td><td><span class="tag p">Misuse</span></td></tr>
+          <tr><td>Four failed login attempts</td><td><span class="tag">Anomaly</span></td></tr>
+          <tr><td>Failed connections on 50 sequential ports</td><td><span class="tag">Anomaly</span></td></tr>
+          <tr><td>User logs in at 4:30am from Russian IP (normally 10am from UK dorm)</td><td><span class="tag">Anomaly</span></td></tr>
+          <tr><td>UDP packet to port 1434</td><td><span class="tag p">Misuse</span></td></tr>
+          <tr><td>"DEBUG" in the body of an SMTP message</td><td><span class="tag o">Not an attack (most likely)</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card g">
+      <h3>IDS Detection Methods: Practical</h3>
+      <ul>
+        <li>Use IDS to detect crackers during the <strong>scanning stage</strong> → lock out the IP address, or remove malware from a local host</li>
+        <li>Use a program like <strong>TripWire</strong> on each host to detect when system files are altered → email alert to Sys Admin</li>
+      </ul>
+    </div>
+    <div class="callout w5">The challenge: "DEBUG" in an SMTP message looks suspicious but is a legitimate SMTP command. Not all anomalies are attacks — <strong>false positives</strong> are a real problem in detection systems.</div>
+  </div>
+
+  <div class="panel" id="panel-w5t4">
+    <div class="section-title w5">// 04 — Signatures</div>
+    <div class="card w5">
+      <h3>What is a Signature?</h3>
+      <p>A signature is a set of rules that an IDS and an IPS use to detect typical intrusive activity. As new threats are identified, new signatures must be created and uploaded to an IPS.</p>
+    </div>
+    <div class="card o">
+      <h3>Signature Attributes</h3>
+      <ul>
+        <li><strong>Signature Type</strong>
+          <ul>
+            <li><span class="tag">Atomic</span> One packet required to match</li>
+            <li><span class="tag p">Composite</span> Many packets required (stateful)</li>
+          </ul>
+        </li>
+        <li><strong>Trigger (alarm)</strong> — what causes the signature to fire</li>
+        <li><strong>Action</strong> — what the IPS does when triggered</li>
+      </ul>
+    </div>
+    <div class="card p">
+      <h3>Atomic Signature</h3>
+      <ul>
+        <li>Triggered by a <strong>single packet</strong> — no state required</li>
+        <li>Example: A LAN attack with a spoofed TCP SYN packet where the IP address of the target is both source and destination — causes the machine to reply to itself continuously</li>
+        <li>Detectable from a single Wireshark capture frame</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Composite (Stateful) Signature</h3>
+      <ul>
+        <li>Requires <strong>multiple packets</strong> to match the pattern</li>
+        <li>Identifies a sequence of operations</li>
+        <li>Usually requires several pieces of data to match an attack signature</li>
+      </ul>
+    </div>
+    <div class="card y">
+      <h3>Signature Examples</h3>
+      <table class="ctable w5">
+        <thead><tr><th>ID</th><th>Name</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><strong>1101</strong></td><td>Unknown IP Protocol</td><td>Triggers when an IP datagram is received with the protocol field set to 134 or greater.</td></tr>
+          <tr><td><strong>1307</strong></td><td>TCP Window Size Variation</td><td>Fires when the TCP window varies in a suspect manner.</td></tr>
+          <tr><td><strong>3002</strong></td><td>TCP SYN Port Sweep</td><td>Triggers when a series of TCP SYN packets have been sent to many different destination ports on a specific host.</td></tr>
+          <tr><td><strong>3227</strong></td><td>WWW HTML Script Bug</td><td>Triggers when an attempt is made to view files above the HTML root directory.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card g">
+      <h3>Signature Micro-Engines (SME)</h3>
+      <p>IOS software relies on SMEs to process signatures. Since IOS 12.4(11)T, Cisco introduced version 5.x, an improved IPS signature format.</p>
+      <table class="ctable w5" style="margin-top:.65rem">
+        <thead><tr><th>Engine</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Atomic</strong></td><td>Examines simple packets such as ICMP and UDP</td></tr>
+          <tr><td><strong>Service</strong></td><td>Examines the many services that are attacked</td></tr>
+          <tr><td><strong>String</strong></td><td>Uses regular expression patterns to detect intrusions</td></tr>
+          <tr><td><strong>Multi-string</strong></td><td>Supports flexible pattern matching and Trend Labs signatures</td></tr>
+          <tr><td><strong>Other</strong></td><td>Internal engine that handles miscellaneous signatures</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card">
+      <h3>Signature OSI Layer Coverage</h3>
+      <ul>
+        <li><strong>Application/Presentation layers:</strong> DNS reconnaissance and DoS, Worms, viruses, Trojan horses, adware, malware</li>
+        <li><strong>Transport layer:</strong> Port sweeps, Port scans, TCP SYN attack</li>
+        <li><strong>Network/Data Link layers:</strong> Fragmentation attacks, IP options, ICMP reconnaissance and DoS</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="panel" id="panel-w5t5">
+    <div class="section-title w5">// 05 — Types of Signature Triggers</div>
+    <div class="card w5">
+      <h3>Four Trigger Types</h3>
+      <table class="ctable w5">
+        <thead><tr><th>Type</th><th>Advantages</th><th>Disadvantages</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Pattern-based (Signature)</strong></td><td>Easy config, fewer false positives, good signature design</td><td>No unknown signature detection; signatures need creating/updating/tuning</td></tr>
+          <tr><td><strong>Policy-based (Behaviour)</strong></td><td>Simple, reliable, customised policies, detects unknown attacks</td><td>Generic output, policy must be created by admin</td></tr>
+          <tr><td><strong>Anomaly (Profile)</strong></td><td>Easy config, detects unknown attacks</td><td>Difficult to profile large networks; traffic profile must be constant</td></tr>
+          <tr><td><strong>Honey Pot-based</strong></td><td>Window to view attacks; distracts/confuses attackers; collects info</td><td>Dedicated server needed; honey pot must not be trusted</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card o">
+      <h3>Pattern-Based Detection (Signature-Based)</h3>
+      <table class="ctable">
+        <thead><tr><th>Signature Trigger</th><th>Atomic</th><th>Composite</th></tr></thead>
+        <tbody>
+          <tr><td>Pattern-based Detection</td><td>No state required to examine pattern</td><td>Must maintain state or examine multiple items</td></tr>
+          <tr><td>Example</td><td>ARP request with source Ethernet address FF:FF:FF:FF:FF:FF</td><td>Searching for "confidential" across multiple packets in a TCP session</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card p">
+      <h3>Anomaly-Based Detection</h3>
+      <table class="ctable">
+        <thead><tr><th>Signature Trigger</th><th>Atomic</th><th>Composite</th></tr></thead>
+        <tbody>
+          <tr><td>Anomaly-based Detection</td><td>No state required — identifies activity deviating from normal profile</td><td>State required to identify activity deviating from normal profile</td></tr>
+          <tr><td>Example</td><td>Traffic going to a destination port not in the normal profile</td><td>Verifying protocol compliance for HTTP traffic</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card g">
+      <h3>Policy-Based Detection</h3>
+      <p>Behaviour-based detection where the administrator defines the allowed/disallowed behaviours.</p>
+      <table class="ctable" style="margin-top:.65rem">
+        <thead><tr><th>Signature Trigger</th><th>Atomic</th><th>Composite</th></tr></thead>
+        <tbody>
+          <tr><td>Policy-based Detection</td><td>No state required to identify undesirable behaviour</td><td>Previous activity (state) required to identify undesirable behaviour</td></tr>
+          <tr><td>Example</td><td>Detecting abnormally large fragmented packets by examining only the last fragment</td><td>A SUN Unix host sending RPC requests without consulting SUN PortMapper first</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card y">
+      <h3>Honey Pot-Based Detection</h3>
+      <ul>
+        <li>Provides a window to view attacks in a controlled environment</li>
+        <li>Distracts and confuses attackers</li>
+        <li>Slows down and averts attacks from real targets</li>
+        <li>Collects information about attack techniques</li>
+        <li><strong>Requirement:</strong> Dedicated honey pot server that must never be trusted as a legitimate system</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="panel" id="panel-w5t6">
+    <div class="section-title w5">// 06 — IPS Signature Actions &amp; Summary</div>
+    <div class="card w5">
+      <h3>IPS Signature Actions — Three Categories</h3>
+      <table class="ctable w5">
+        <thead><tr><th>Category</th><th>Specific Alert/Action</th></tr></thead>
+        <tbody>
+          <tr><td rowspan="2"><strong>Generating an alert</strong></td><td>Produce alert</td></tr>
+          <tr><td>Produce verbose alert</td></tr>
+          <tr><td rowspan="3"><strong>Logging the activity</strong></td><td>Log attacker packets</td></tr>
+          <tr><td>Log pair packets</td></tr>
+          <tr><td>Log victim packets</td></tr>
+          <tr><td rowspan="3"><strong>Dropping/preventing activity</strong></td><td>Deny attacker inline</td></tr>
+          <tr><td>Deny connection inline</td></tr>
+          <tr><td>Deny packet inline</td></tr>
+          <tr><td><strong>Resetting a TCP connection</strong></td><td>Reset TCP connection</td></tr>
+          <tr><td rowspan="3"><strong>Blocking future activity</strong></td><td>Request block connection</td></tr>
+          <tr><td>Request block host</td></tr>
+          <tr><td>Request SNMP trap</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card o">
+      <h3>Key Takeaways — IDS/IPS Summary</h3>
+      <ul>
+        <li>A network must be able to instantly recognise and mitigate worm and virus threats</li>
+        <li>A network-based IPS should be implemented <strong>inline</strong> to defend against fast-moving Internet worms and viruses</li>
+        <li>IPS signatures provide the IPS with a list of identified problems</li>
+        <li>Signatures are configured to use various triggers and actions</li>
+        <li>Security staff must <strong>continuously monitor</strong> an IPS solution and tune signatures as necessary to ensure adequate protection</li>
+      </ul>
+    </div>
+    <div class="card p">
+      <h3>Cisco Hardware — IPS Integration</h3>
+      <ul>
+        <li>Cisco ASA 5510 has an SSM (Security Services Module) slot for IPS/AV expansion cards</li>
+        <li>Cisco AIP SSM (Advanced Inspection and Prevention Security Services Module) is a dedicated IPS card</li>
+        <li>Provides hardware-accelerated inline inspection of all traffic</li>
+        <li>Integrated into the ASA firewall appliance</li>
+      </ul>
+    </div>
+    <div class="callout w5"><strong>Remember:</strong> IDS and IPS are not mutually exclusive — they can and should complement each other in a defence-in-depth strategy alongside firewalls.</div>
+  </div>
+
+  <!-- W5 QUIZ PANELS -->
+  <div class="panel" id="panel-w5q1"><div class="quiz-header"><h2>Quiz 01 — Network Intrusion Stages</h2><span class="qscore" id="sc-w5q1">0 answered</span></div><div id="qc-w5q1"></div><div class="quiz-controls"><button class="reset-btn" onclick="resetQuiz('w5q1')">↺ Reset</button></div><div class="score-box" id="sb-w5q1"></div></div>
+  <div class="panel" id="panel-w5q2"><div class="quiz-header"><h2>Quiz 02 — IDS vs IPS</h2><span class="qscore" id="sc-w5q2">0 answered</span></div><div id="qc-w5q2"></div><div class="quiz-controls"><button class="reset-btn" onclick="resetQuiz('w5q2')">↺ Reset</button></div><div class="score-box" id="sb-w5q2"></div></div>
+  <div class="panel" id="panel-w5q3"><div class="quiz-header"><h2>Quiz 03 — Detection Methods</h2><span class="qscore" id="sc-w5q3">0 answered</span></div><div id="qc-w5q3"></div><div class="quiz-controls"><button class="reset-btn" onclick="resetQuiz('w5q3')">↺ Reset</button></div><div class="score-box" id="sb-w5q3"></div></div>
+  <div class="panel" id="panel-w5q4"><div class="quiz-header"><h2>Quiz 04 — Signatures</h2><span class="qscore" id="sc-w5q4">0 answered</span></div><div id="qc-w5q4"></div><div class="quiz-controls"><button class="reset-btn" onclick="resetQuiz('w5q4')">↺ Reset</button></div><div class="score-box" id="sb-w5q4"></div></div>
+  <div class="panel" id="panel-w5q5"><div class="quiz-header"><h2>Quiz 05 — Trigger Types &amp; Actions</h2><span class="qscore" id="sc-w5q5">0 answered</span></div><div id="qc-w5q5"></div><div class="quiz-controls"><button class="reset-btn" onclick="resetQuiz('w5q5')">↺ Reset</button></div><div class="score-box" id="sb-w5q5"></div></div>
+  <div class="panel" id="panel-w5qfinal"><div class="quiz-header"><h2>⬡ Week 5 Final Quiz (20 Questions)</h2><span class="qscore" id="sc-w5qfinal">0 answered</span></div><div id="qc-w5qfinal"></div><div class="quiz-controls"><button class="reset-btn" onclick="resetQuiz('w5qfinal')">↺ Reset</button></div><div class="score-box" id="sb-w5qfinal"></div></div>
+</div><!-- end week5 -->
+
+<script>
+// ==================== WEEK SWITCHING ====================
+function switchWeek(w) {
+  document.getElementById('week4').classList.remove('active');
+  document.getElementById('week5').classList.remove('active');
+  document.getElementById('weekBtn4').className = 'week-btn';
+  document.getElementById('weekBtn5').className = 'week-btn';
+  document.getElementById('week' + w).classList.add('active');
+  document.getElementById('weekBtn' + w).className = 'week-btn active-w' + w;
+}
+
+// ==================== TAB SWITCHING ====================
+function setupTabBar(barId, week) {
+  var bar = document.getElementById(barId);
+  if (!bar) return;
+  bar.addEventListener('click', function(e) {
+    var btn = e.target.closest('.tab-btn');
+    if (!btn) return;
+    var tab = btn.getAttribute('data-tab');
+    bar.querySelectorAll('.tab-btn').forEach(function(b){ b.className = b.className.replace(/active-w\d/g,'').trim(); });
+    var panels = document.getElementById('week' + week).querySelectorAll('.panel');
+    panels.forEach(function(p){ p.classList.remove('active'); });
+    btn.classList.add('active-w' + week);
+    var panel = document.getElementById('panel-' + tab);
+    if (panel) panel.classList.add('active');
+    if (tab.indexOf('q') !== -1 && tab.indexOf('t') === -1) renderQuiz(tab);
+  });
+}
+setupTabBar('tabBar4', 4);
+setupTabBar('tabBar5', 5);
+
+// ==================== QUIZ DATA ====================
+var QDATA = {
+  // ===== WEEK 4 =====
+  w4q1: [
+    { type:'mc', q:'Which network region is described as a semi-trusted buffer zone hosting publicly accessible servers?',
+      opts:['Internet','Intranet','DMZ','VPN'], ans:2,
+      exp:'The DMZ (Demilitarized Zone) is the semi-trusted buffer zone between the internet and intranet, hosting public-facing servers.' },
+    { type:'text', q:'What is the name of the internal, trusted network that houses file servers, mail servers, and user machines?',
+      ans:'intranet', exp:'The Intranet is the trusted internal private network.' },
+    { type:'mc', q:'In a dual-firewall architecture, where is the DMZ physically located?',
+      opts:['Behind both firewalls','Between the two firewalls','In front of both firewalls','Inside the intranet'], ans:1,
+      exp:'The DMZ sits between the outer firewall (facing the internet) and the inner firewall (protecting the intranet).' },
+    { type:'mc', q:'Which two mechanisms are described as network boundaries in the lecture?',
+      opts:['Router and Switch','Firewall and Proxy','Hub and Bridge','DNS and DHCP'], ans:1,
+      exp:'Firewall and Proxy are the two key network boundary mechanisms.' },
+    { type:'text', q:'What does DMZ stand for?',
+      ans:'demilitarized zone', exp:'DMZ = Demilitarized Zone.' },
+    { type:'order', q:'Order these regions from most trusted (top) to least trusted (bottom):',
+      items:['Internet','Intranet','DMZ'],
+      ans:['Intranet','DMZ','Internet'],
+      exp:'Intranet (trusted) → DMZ (semi-trusted) → Internet (untrusted).' },
+    { type:'mc', q:'Why is the inner firewall between the DMZ and the intranet important?',
+      opts:['It speeds up internet connections','It provides a second line of defence even if a DMZ server is compromised','It allows DMZ servers to freely access internal servers','It manages NAT translations'], ans:1,
+      exp:'Even if an attacker compromises a DMZ server, they still face the inner firewall before reaching the intranet.' }
+  ],
+  w4q2: [
+    { type:'mc', q:'Basic packet filtering uses which layer of information?',
+      opts:['Application layer only','Transport layer only (IP/TCP headers)','Physical layer only','Data link layer only'], ans:1,
+      exp:'Basic packet filtering uses transport-layer info: IP addresses, protocols, port numbers, TCP flags, ICMP types.' },
+    { type:'text', q:'What port number does DNS use?',
+      ans:'53', exp:'DNS uses port 53.' },
+    { type:'text', q:'What port does SMTP (sending email) use?',
+      ans:'25', exp:'SMTP uses port 25.' },
+    { type:'mc', q:'In TCP port numbering, which range is used for well-known server ports?',
+      opts:['1024-16383','0-1023','16384-65535','49152-65535'], ans:1,
+      exp:'Server ports use numbers below 1024 (well-known/permanent). Client ports use 1024-16383.' },
+    { type:'mc', q:'What is the main problem with stateless packet filtering and high-numbered ports?',
+      opts:['High ports must be permanently blocked','High ports must remain open for client replies, creating an attack surface','High ports are reserved for servers only','High ports cannot be used in firewall rules'], ans:1,
+      exp:'Stateless filtering must allow all incoming high-port traffic for replies, which is a security weakness.' },
+    { type:'mc', q:'How does stateful filtering solve the high-port problem?',
+      opts:['Blocks all high ports permanently','Only allows incoming high-port traffic to machines that initiated an outgoing low-port request','Randomly assigns ports to clients','Upgrades all connections to use low ports'], ans:1,
+      exp:'Stateful filtering tracks outgoing requests and only permits matching incoming replies.' },
+    { type:'text', q:'What port does HTTP use?',
+      ans:'80', exp:'HTTP uses port 80.' },
+    { type:'mc', q:'In a packet fragmentation attack, what happens to the second packet (Dest Port 23, normally blocked)?',
+      opts:['The firewall inspects and correctly blocks it','The firewall ignores its TCP header as a data fragment and lets it through; host reassembles at port 23','The firewall drops all fragments automatically','The packet is redirected to port 25'], ans:1,
+      exp:'The firewall treats it as a data fragment (not inspecting its TCP header). At the host, reassembly puts traffic on port 23.' },
+    { type:'order', q:'Put the FTP connection steps in the correct order:',
+      items:['Server opens data channel to client second port','Server acknowledges (OK)','Client opens command channel and sends PORT 5151','Client acknowledges (TCP ACK)'],
+      ans:['Client opens command channel and sends PORT 5151','Server acknowledges (OK)','Server opens data channel to client second port','Client acknowledges (TCP ACK)'],
+      exp:'1) Client sends PORT, 2) Server sends OK, 3) Server opens data channel, 4) Client sends TCP ACK.' },
+    { type:'text', q:'What port does HTTPS use?',
+      ans:'443', exp:'HTTPS (secure web pages) uses port 443.' }
+  ],
+  w4q3: [
+    { type:'mc', q:'Which firewall type provides the highest level of security?',
+      opts:['Packet filter','Circuit-level proxy','Stateful packet filter','Application-level proxy'], ans:3,
+      exp:'The application-level proxy provides high security by fully understanding and validating the application protocol.' },
+    { type:'text', q:'What type of firewall understands TCP SYN/SYN-ACK/ACK and only requires rules in one direction?',
+      ans:'stateful packet filter', exp:'Stateful packet filter tracks connection state and auto-handles replies.' },
+    { type:'mc', q:'A circuit-level proxy differs from a packet filter mainly because:',
+      opts:['It inspects application-layer content','Packets are NOT routed — the proxy terminates and re-initiates connections','It only works with UDP traffic','It operates at Layer 1'], ans:1,
+      exp:'In a circuit-level proxy, packets are not routed through. The proxy terminates the connection and opens a new one to the server.' },
+    { type:'mc', q:'In an application-level proxy, what is the correct connection flow?',
+      opts:['Client connects directly to Server; proxy monitors passively','Client connects to Firewall (validates) → Firewall connects to Server → response back through Firewall','Firewall connects to Client then to Server simultaneously','Server initiates connection through firewall to client'], ans:1,
+      exp:'The client connects to the firewall, which validates the request, then connects to the real server.' },
+    { type:'order', q:'Order firewall types from LOWEST to HIGHEST security:',
+      items:['Application-level proxy','Stateful packet filter','Packet filter','Circuit-level proxy'],
+      ans:['Packet filter','Circuit-level proxy','Stateful packet filter','Application-level proxy'],
+      exp:'Low→Low-Med→Med-High→High: Packet filter, Circuit-level proxy, Stateful packet filter, Application-level proxy.' },
+    { type:'mc', q:'An SMTP application proxy doing virus scanning must understand:',
+      opts:['Only TCP port numbers','MIME encoding, Zip archives, and email structure','IP routing tables','ARP tables'], ans:1,
+      exp:'To scan for viruses in email, the proxy must understand MIME, encoding formats, and Zip archives.' },
+    { type:'mc', q:'What is the key disadvantage of application-level proxies?',
+      opts:['Too little security','Can only handle one protocol','Large processing per connection introduces network delays','Cannot be deployed on hardware'], ans:2,
+      exp:'Application-level proxies require significant processing per connection, which can cause network delays.' }
+  ],
+  w4q4: [
+    { type:'mc', q:'Which firewall configuration approach is considered much more secure?',
+      opts:['Allow all traffic, block some','Block all traffic, allow some','Allow all from internal networks','Block only well-known ports'], ans:1,
+      exp:'"Block all, allow some" (allowlisting) is more secure — unknown traffic is blocked by default.' },
+    { type:'mc', q:'Which ASA mode operates at Layer 2 and is also called a stealth firewall?',
+      opts:['Routed Mode','Transparent Mode','Promiscuous Mode','Bridge Mode'], ans:1,
+      exp:'Transparent Mode (Layer 2) is also called a bump-in-the-wire or stealth firewall with no NAT boundary.' },
+    { type:'text', q:'What ASA CLI command moves you from user EXEC to privileged EXEC mode?',
+      ans:'enable', exp:'The "enable" command enters privileged EXEC mode.' },
+    { type:'mc', q:'External mail should only reach the mail server on which port?',
+      opts:['Port 80','Port 110','Port 25','Port 143'], ans:2,
+      exp:'External SMTP mail delivery uses TCP port 25. All other external access to the mail server should be blocked.' },
+    { type:'mc', q:'What is the ASA equivalent of the IOS command "copy running-config startup-config"?',
+      opts:['save config','write [memory]','store running','backup startup'], ans:1,
+      exp:'"write [memory]" on ASA saves the running configuration.' },
+    { type:'text', q:'What ASA command shows NAT translations (equivalent to IOS "show ip nat translations")?',
+      ans:'show xlate', exp:'"show xlate" displays NAT translation entries on ASA.' },
+    { type:'order', q:'Order these actions: allow-all failure vs block-all failure consequences:',
+      items:['With block-all: user complains, admin adds rule — problem solved','With allow-all: forgotten rule stays open undetected','With block-all: secure by default, explicit allow needed','With allow-all: attacker may silently exploit open port'],
+      ans:['With allow-all: forgotten rule stays open undetected','With allow-all: attacker may silently exploit open port','With block-all: secure by default, explicit allow needed','With block-all: user complains, admin adds rule — problem solved'],
+      exp:'Allow-all failures are silent and dangerous; block-all failures are noisy and easily fixed.' }
+  ],
+  w4q5: [
+    { type:'mc', q:'Which firewall type cannot perform content-based filtering on emails?',
+      opts:['Application-level proxy','Packet filtering firewall','Web traffic scanning proxy','SMTP proxy'], ans:1,
+      exp:'Packet filtering firewalls only look at headers, not content. Virus-infected emails pass through if SMTP is allowed.' },
+    { type:'mc', q:'Why is encrypted traffic (HTTPS, SSH) a problem for firewalls?',
+      opts:['It uses non-standard ports','Firewalls cannot inspect or filter encrypted content','Encryption slows down firewall hardware','Encrypted traffic always bypasses the firewall'], ans:1,
+      exp:'SSH and TLS operate end-to-end. Any middlebox, including a firewall, cannot decode the encrypted payload.' },
+    { type:'text', q:'What is the term for hiding one protocol inside another allowed protocol to bypass a firewall?',
+      ans:'protocol tunnelling', exp:'Protocol tunnelling embeds disallowed protocols inside allowed ones to bypass firewall rules.' },
+    { type:'mc', q:'Which product is described as the market leader enterprise firewall?',
+      opts:['Symantec Raptor','Cisco PIX/ASA','Check Point Firewall','pfSense'], ans:2,
+      exp:'Check Point Firewall is described as the market leader — a stateful packet filter with proxy and auth capabilities.' },
+    { type:'mc', q:'Which real-world firewall is an Application Proxy type?',
+      opts:['Check Point Firewall','Cisco PIX/ASA','Symantec Raptor','ASA 5505'], ans:2,
+      exp:'Symantec Raptor is an application proxy with some packet filtering capabilities.' },
+    { type:'mc', q:'What is the fundamental firewall trade-off stated in the lecture?',
+      opts:['Speed versus accuracy','Degree of communication with outside world versus level of security','Hardware cost versus software cost','Inbound versus outbound filtering'], ans:1,
+      exp:'The more open communication you allow, the lower the security; the more you lock down, the less usable the network.' },
+    { type:'text', q:'What attack technique means a router cannot verify if data truly comes from its claimed source address?',
+      ans:'ip spoofing', exp:'IP spoofing is forging the source IP address. Routers/firewalls cannot always verify the true origin.' }
+  ],
+
+  // ===== WEEK 5 =====
+  w5q1: [
+    { type:'order', q:'Put the 5 stages of network intrusion in the correct order:',
+      items:['Utilize (IRC, botnets, ID theft)','Reconnaissance (nmap scan)','Root Kit / Backdoor','Access (exploit scripts)','Elevate (root/admin privileges)'],
+      ans:['Reconnaissance (nmap scan)','Access (exploit scripts)','Elevate (root/admin privileges)','Root Kit / Backdoor','Utilize (IRC, botnets, ID theft)'],
+      exp:'The stages are: 1) Reconnaissance, 2) Access, 3) Elevate, 4) Root Kit, 5) Utilize.' },
+    { type:'mc', q:'During the Reconnaissance stage, which tool is described as being used to scan for open ports and services?',
+      opts:['Wireshark','traceroute','nmap','TripWire'], ans:2,
+      exp:'nmap is used during reconnaissance to discover active IPs, operating systems, and open TCP/UDP ports.' },
+    { type:'text', q:'What is the first stage of a network intrusion called?',
+      ans:'reconnaissance', exp:'Reconnaissance is the scanning phase where attackers gather information about the target network.' },
+    { type:'mc', q:'In the nmap output shown in the lecture, what does the status "filtered" mean for a port?',
+      opts:['The port is open and accepting connections','The port response was blocked by a firewall','The port is closed and returning RST','The port was not scanned'], ans:1,
+      exp:'Filtered means a firewall is blocking the response. The port exists but the firewall prevents a response being sent back.' },
+    { type:'mc', q:'At Stage 4 (Root Kit), why does a cracker install a root kit or backdoor?',
+      opts:['To speed up future connections','To gain free access without being noticed by auditing systems','To share files with other users','To improve system performance'], ans:1,
+      exp:'A root kit hides the attacker\'s presence from log files and audit tools, allowing undetected persistent access.' },
+    { type:'mc', q:'What is the purpose of Stage 5 (Utilize) in a network intrusion?',
+      opts:['To recover the system','To invite more hackers via IRC, conduct ID theft, or recruit into a botnet','To patch vulnerabilities found','To scan for other networks'], ans:1,
+      exp:'Once inside, attackers utilise the compromised host for IRC communication, ID theft, Warez distribution, or botnet recruitment.' },
+    { type:'text', q:'What Linux log file can show who has logged on (unless a root kit has been installed)?',
+      ans:'/var/log/secure', exp:'/var/log/secure records SSH login activity. On Windows use Event Viewer; on Mac use Console.' }
+  ],
+  w5q2: [
+    { type:'mc', q:'Which generation is an Intrusion Detection System (IDS)?',
+      opts:['Third generation','First generation','Second generation','Fourth generation'], ans:1,
+      exp:'IDS is the first generation of intrusion countermeasures. IPS is the second generation.' },
+    { type:'text', q:'What mode does an IDS operate in (it monitors traffic passively without being in the path)?',
+      ans:'promiscuous', exp:'IDS operates in promiscuous mode — it receives a copy of traffic but does not sit inline.' },
+    { type:'mc', q:'What is the key advantage of IPS over IDS?',
+      opts:['IPS has no impact on network latency','IPS can stop trigger packets before they reach the target','IPS is cheaper to deploy','IPS does not need signatures'], ans:1,
+      exp:'IPS operates inline and can actively drop/block malicious packets before they reach the target.' },
+    { type:'mc', q:'What is a key disadvantage of an inline IPS compared to a passive IDS?',
+      opts:['IPS cannot generate alerts','IPS introduces some network latency/jitter and sensor failure impacts the network','IPS cannot detect any attacks','IPS only works with TCP traffic'], ans:1,
+      exp:'Because IPS sits inline in the traffic path, it introduces some latency and a sensor failure can disrupt network traffic.' },
+    { type:'mc', q:'Intrusion Prevention covers which three goals?',
+      opts:['Scan, Block, Report','Detection, Prevention, Reaction','Monitor, Alert, Reset','Identify, Quarantine, Restore'], ans:1,
+      exp:'Intrusion prevention is built on three pillars: Detection, Prevention, and Reaction.' },
+    { type:'text', q:'What mode does an IPS operate in (it sits directly in the network traffic path)?',
+      ans:'inline', exp:'IPS operates in inline mode — all traffic passes through the sensor which can drop packets in real time.' },
+    { type:'mc', q:'Which statement correctly describes the relationship between IDS and IPS?',
+      opts:['They are mutually exclusive — only one can be used','IDS replaces IPS in modern networks','IDS and IPS are not mutually exclusive and can complement each other','IPS always replaces IDS'], ans:2,
+      exp:'IDS and IPS can work together — IDS for broad monitoring and IPS for inline active prevention.' },
+    { type:'order', q:'Order the IDS flow steps when an intrusion occurs:',
+      items:['Management console is alerted','Attack may still reach the target','Traffic is copied/mirrored to IDS sensor','Sensor detects attack pattern'],
+      ans:['Traffic is copied/mirrored to IDS sensor','Sensor detects attack pattern','Management console is alerted','Attack may still reach the target'],
+      exp:'IDS: 1) Traffic mirrored to sensor, 2) Sensor detects attack, 3) Alert to console, 4) Attack still reaches target (IDS cannot stop it).' }
+  ],
+  w5q3: [
+    { type:'mc', q:'A user who normally logs in at 10am from a UK university logs in at 4:30am from a Russian IP address. What type of detection is this?',
+      opts:['Misuse detection','Anomaly detection','Policy-based detection','Honey pot detection'], ans:1,
+      exp:'This is anomaly detection — the behaviour deviates significantly from the established normal profile.' },
+    { type:'mc', q:'UDP packet sent to port 1434 (SQL Slammer worm). What type of detection would identify this?',
+      opts:['Anomaly detection','Honey pot detection','Misuse detection','Profile-based detection'], ans:2,
+      exp:'This is misuse detection — port 1434 UDP is a known signature for the SQL Slammer worm.' },
+    { type:'text', q:'What type of detection compares activity against a database of known attack signatures?',
+      ans:'misuse detection', exp:'Misuse detection matches current activity against known bad patterns or signatures.' },
+    { type:'mc', q:'Four failed login attempts in quick succession — what detection type would flag this?',
+      opts:['Misuse detection','Not an attack','Anomaly detection','Honey pot'], ans:2,
+      exp:'Multiple failed login attempts deviate from normal behaviour — this is anomaly detection.' },
+    { type:'mc', q:'"DEBUG" in the body of an SMTP message — how should this be classified?',
+      opts:['Definite misuse — block immediately','Anomaly — investigate','Not an attack (most likely) — DEBUG is a legitimate SMTP command','Root kit indicator'], ans:2,
+      exp:'DEBUG is a legitimate SMTP command. Not everything suspicious is actually an attack — false positives are a real problem.' },
+    { type:'text', q:'What program can be installed on individual hosts to detect when system files are altered and send an alert?',
+      ans:'tripwire', exp:'TripWire monitors system files for modifications and alerts the system administrator if changes are detected.' },
+    { type:'order', q:'Order these scenarios from most clearly a MISUSE to most clearly an ANOMALY:',
+      items:['Four failed login attempts','Root password modified while admin not logged in','UDP packet to port 1434 (SQL Slammer)','Failed connections on 50 sequential ports'],
+      ans:['Root password modified while admin not logged in','UDP packet to port 1434 (SQL Slammer)','Failed connections on 50 sequential ports','Four failed login attempts'],
+      exp:'Misuse examples have a specific known pattern; anomalies are deviations from normal behaviour without a specific signature match.' }
+  ],
+  w5q4: [
+    { type:'text', q:'What is a signature in the context of IDS/IPS?',
+      ans:'a set of rules', exp:'A signature is a set of rules that an IDS and IPS use to detect typical intrusive activity.' },
+    { type:'mc', q:'Which signature type requires only a single packet to trigger?',
+      opts:['Composite signature','Stateful signature','Atomic signature','Multi-string signature'], ans:2,
+      exp:'An atomic signature requires only one packet to identify the attack pattern.' },
+    { type:'mc', q:'Which signature type tracks a sequence of operations across multiple packets?',
+      opts:['Atomic signature','Composite (stateful) signature','String signature','Service signature'], ans:1,
+      exp:'A composite (stateful) signature requires multiple packets and identifies a sequence of operations.' },
+    { type:'mc', q:'Signature ID 3002 "TCP SYN Port Sweep" — what does this detect?',
+      opts:['A single SYN packet','TCP SYN packets sent to many different destination ports on one host','All TCP traffic on port 3002','Any failed TCP connection'], ans:1,
+      exp:'Signature 3002 fires when a series of TCP SYN packets have been sent to a number of different ports on a specific host.' },
+    { type:'text', q:'What does SME stand for in the context of Cisco IPS?',
+      ans:'signature micro-engine', exp:'SME = Signature Micro-Engine. IOS IPS software relies on SMEs to process different signature types.' },
+    { type:'mc', q:'Which SME type uses regular expression patterns to detect intrusions?',
+      opts:['Atomic','Service','String','Other'], ans:2,
+      exp:'The String engine uses regular expression pattern matching to detect intrusions.' },
+    { type:'mc', q:'At which OSI layers would you find signatures for port sweeps, port scans, and TCP SYN attacks?',
+      opts:['Application layer','Transport layer','Network/Data Link layers','Physical layer'], ans:1,
+      exp:'Port sweeps, port scans, and TCP SYN attacks are transport-layer events.' },
+    { type:'order', q:'Order these signature micro-engines from most specific to most general:',
+      items:['Other (miscellaneous)','Atomic (ICMP/UDP)','Service (attacked services)','String (regex patterns)'],
+      ans:['Atomic (ICMP/UDP)','Service (attacked services)','String (regex patterns)','Other (miscellaneous)'],
+      exp:'Atomic is most specific (single simple packet type), through to Other which handles everything else.' }
+  ],
+  w5q5: [
+    { type:'mc', q:'Which trigger type is described as having easy configuration and fewer false positives but cannot detect unknown attacks?',
+      opts:['Anomaly detection','Policy-based detection','Pattern-based (signature) detection','Honey pot-based detection'], ans:2,
+      exp:'Pattern-based detection is easy to configure and produces fewer false positives, but only knows about attacks with existing signatures.' },
+    { type:'mc', q:'Which trigger type can detect unknown attacks by tracking deviations from a normal profile?',
+      opts:['Pattern-based detection','Honey pot-based detection','Anomaly detection (profile-based)','Atomic signature detection'], ans:2,
+      exp:'Anomaly detection learns a baseline of normal activity and flags deviations — it can detect previously unknown attacks.' },
+    { type:'mc', q:'What is the main advantage of a Honey Pot-based detection system?',
+      opts:['It requires no dedicated hardware','It provides a window to view attacks and distracts attackers from real targets','It uses no network resources','It can block all attacks automatically'], ans:1,
+      exp:'Honey pots attract attackers to a fake target, allowing observation of attack methods and distracting from real systems.' },
+    { type:'text', q:'What IPS action drops malicious packets in the direct traffic path?',
+      ans:'deny packet inline', exp:'"Deny packet inline" drops the specific malicious packet as it passes through the inline IPS sensor.' },
+    { type:'mc', q:'Which IPS action category contains "Log attacker packets", "Log pair packets", and "Log victim packets"?',
+      opts:['Generating an alert','Logging the activity','Dropping or preventing the activity','Blocking future activity'], ans:1,
+      exp:'These three are all under the "Logging the activity" category of IPS signature actions.' },
+    { type:'mc', q:'What is a key disadvantage of anomaly-based (profile-based) detection?',
+      opts:['It cannot generate alerts','It is difficult to profile typical activity in large networks and traffic profile must be constant','It cannot detect any attacks','It requires specific signatures for every attack'], ans:1,
+      exp:'In large networks, normal traffic patterns are complex and variable, making accurate profiling very difficult.' },
+    { type:'order', q:'Order these IPS actions from detection-only to full prevention:',
+      items:['Deny attacker inline','Produce alert','Request block host','Log attacker packets'],
+      ans:['Produce alert','Log attacker packets','Deny attacker inline','Request block host'],
+      exp:'Alert (notify only) → Log (record) → Deny inline (block current attack) → Block host (prevent all future traffic from attacker).' },
+    { type:'mc', q:'Why must a network-based IPS be deployed inline rather than passively?',
+      opts:['Passive deployment is more expensive','Inline deployment allows the IPS to stop fast-moving Internet worms before they reach the target','Inline deployment uses less bandwidth','Passive IPS causes more network disruption'], ans:1,
+      exp:'Only an inline IPS can intercept and block traffic in real time — a passive IDS can only alert after traffic has already passed.' }
+  ]
+};
+
+// Final quizzes draw from week pools
+QDATA['w4qfinal'] = null;
+QDATA['w5qfinal'] = null;
+var w4FinalBuilt = false, w5FinalBuilt = false;
+
+function buildFinal(week) {
+  var pool = [];
+  var prefix = 'w' + week + 'q';
+  ['1','2','3','4','5'].forEach(function(n){
+    var key = prefix + n;
+    if (QDATA[key]) QDATA[key].forEach(function(q){ pool.push(Object.assign({},q,{topic:'W'+week+'Q'+n})); });
+  });
+  for (var i = pool.length-1; i>0; i--) {
+    var j = Math.floor(Math.random()*(i+1));
+    var t = pool[i]; pool[i] = pool[j]; pool[j] = t;
+  }
+  QDATA['w'+week+'qfinal'] = pool.slice(0,20);
+}
+
+// ==================== QUIZ STATE ====================
+var STATE = {};
+function getState(qid){ if(!STATE[qid]) STATE[qid]={answered:0,correct:0,total:0}; return STATE[qid]; }
+
+// ==================== RENDER QUIZ ====================
+function renderQuiz(qid) {
+  if (qid==='w4qfinal' && !w4FinalBuilt){ buildFinal(4); w4FinalBuilt=true; }
+  if (qid==='w5qfinal' && !w5FinalBuilt){ buildFinal(5); w5FinalBuilt=true; }
+  var container = document.getElementById('qc-'+qid);
+  if (!container) return;
+  if (container.children.length>0) return;
+  var qs = QDATA[qid];
+  if (!qs) return;
+  STATE[qid] = {answered:0,correct:0,total:qs.length};
+  updateScoreDisplay(qid);
+  qs.forEach(function(q,i){
+    var div = document.createElement('div');
+    div.className = 'q-card';
+    var typeLabel = q.type==='mc'?'Multiple Choice':q.type==='text'?'Short Answer':'Ordering';
+    var topicTag = q.topic?'<span class="q-topic-tag">'+q.topic+'</span>':'';
+    var html = '<div class="q-num">Q'+(i+1)+'<span class="q-type-tag">'+typeLabel+'</span>'+topicTag+'</div>';
+    html += '<div class="q-text">'+escHtml(q.q)+'</div>';
+    if (q.type==='mc'){
+      var letters=['A','B','C','D'];
+      q.opts.forEach(function(opt,j){
+        html+='<div class="mc-opt" id="'+qid+'-opt-'+i+'-'+j+'" data-qid="'+qid+'" data-qi="'+i+'" data-j="'+j+'">'
+             +'<span class="mc-letter">'+letters[j]+'</span><span>'+escHtml(opt)+'</span></div>';
+      });
+    } else if (q.type==='text'){
+      html+='<div class="text-wrap">'
+           +'<input class="t-input" id="'+qid+'-tinput-'+i+'" placeholder="Type your answer…" data-qid="'+qid+'" data-qi="'+i+'">'
+           +'<button class="chk-btn" id="'+qid+'-tchk-'+i+'" data-qid="'+qid+'" data-qi="'+i+'">Check</button>'
+           +'</div>';
+    } else if (q.type==='order'){
+      var shuffled = q.items.slice().sort(function(){return Math.random()-.5;});
+      html+='<ul class="order-list" id="'+qid+'-ol-'+i+'">';
+      shuffled.forEach(function(item){ html+='<li class="order-item" draggable="true"><span class="drag-handle">⣿</span><span class="item-text">'+escHtml(item)+'</span></li>'; });
+      html+='</ul><button class="chk-btn" id="'+qid+'-ochk-'+i+'" data-qid="'+qid+'" data-qi="'+i+'">Check Order</button>';
+    }
+    html+='<div class="q-feedback" id="'+qid+'-fb-'+i+'"></div>';
+    div.innerHTML=html;
+    container.appendChild(div);
+  });
+  // Events
+  container.querySelectorAll('.mc-opt').forEach(function(el){
+    el.addEventListener('click',function(){checkMC(el.getAttribute('data-qid'),parseInt(el.getAttribute('data-qi')),parseInt(el.getAttribute('data-j')));});
+  });
+  container.querySelectorAll('.chk-btn[id*="-tchk-"]').forEach(function(btn){
+    btn.addEventListener('click',function(){checkText(btn.getAttribute('data-qid'),parseInt(btn.getAttribute('data-qi')));});
+  });
+  container.querySelectorAll('.t-input').forEach(function(inp){
+    inp.addEventListener('keydown',function(e){if(e.key==='Enter')checkText(inp.getAttribute('data-qid'),parseInt(inp.getAttribute('data-qi')));});
+  });
+  container.querySelectorAll('.chk-btn[id*="-ochk-"]').forEach(function(btn){
+    btn.addEventListener('click',function(){checkOrder(btn.getAttribute('data-qid'),parseInt(btn.getAttribute('data-qi')));});
+  });
+  container.querySelectorAll('.order-list').forEach(function(list){attachDrag(list);});
+}
+
+// ==================== DRAG AND DROP ====================
+var dragItem=null;
+function attachDrag(list){
+  list.addEventListener('dragstart',function(e){
+    dragItem=e.target.closest('.order-item');
+    if(dragItem){setTimeout(function(){dragItem.classList.add('dragging');},0);}
+  });
+  list.addEventListener('dragend',function(){if(dragItem){dragItem.classList.remove('dragging');dragItem=null;}});
+  list.addEventListener('dragover',function(e){
+    e.preventDefault();
+    var target=e.target.closest('.order-item');
+    if(target&&target!==dragItem){list.querySelectorAll('.order-item').forEach(function(li){li.classList.remove('dragover');});target.classList.add('dragover');}
+  });
+  list.addEventListener('dragleave',function(e){var target=e.target.closest('.order-item');if(target)target.classList.remove('dragover');});
+  list.addEventListener('drop',function(e){
+    e.preventDefault();
+    var target=e.target.closest('.order-item');
+    if(!target||!dragItem||target===dragItem)return;
+    target.classList.remove('dragover');
+    var items=Array.from(list.children);
+    var si=items.indexOf(dragItem),ti=items.indexOf(target);
+    if(si<ti)list.insertBefore(dragItem,target.nextSibling);
+    else list.insertBefore(dragItem,target);
+  });
+}
+
+// ==================== CHECK FUNCTIONS ====================
+function checkMC(qid,qi,choice){
+  var q=QDATA[qid][qi];
+  var opts=document.querySelectorAll('[id^="'+qid+'-opt-'+qi+'-"]');
+  if(opts[0]&&opts[0].classList.contains('disabled'))return;
+  opts.forEach(function(o){o.classList.add('disabled');});
+  opts[choice].classList.add(choice===q.ans?'correct':'wrong');
+  if(choice!==q.ans)opts[q.ans].classList.add('correct');
+  showFeedback(qid,qi,choice===q.ans,q.exp);
+  if(choice===q.ans)STATE[qid].correct++;
+  STATE[qid].answered++;
+  updateScoreDisplay(qid);
+}
+function checkText(qid,qi){
+  var q=QDATA[qid][qi];
+  var inp=document.getElementById(qid+'-tinput-'+qi);
+  var btn=document.getElementById(qid+'-tchk-'+qi);
+  if(!inp||inp.disabled)return;
+  var val=inp.value.trim().toLowerCase();
+  var alts=q.ans.toLowerCase().split(' / ');
+  var isOk=alts.indexOf(val)!==-1;
+  inp.classList.add(isOk?'correct':'wrong');
+  inp.disabled=true;
+  if(btn)btn.disabled=true;
+  showFeedback(qid,qi,isOk,isOk?q.exp:'Answer: "'+q.ans+'". '+q.exp);
+  if(isOk)STATE[qid].correct++;
+  STATE[qid].answered++;
+  updateScoreDisplay(qid);
+}
+function checkOrder(qid,qi){
+  var q=QDATA[qid][qi];
+  var list=document.getElementById(qid+'-ol-'+qi);
+  var btn=document.getElementById(qid+'-ochk-'+qi);
+  if(!list||(btn&&btn.disabled))return;
+  var items=list.querySelectorAll('.item-text');
+  var current=Array.from(items).map(function(s){return s.textContent.trim();});
+  var isOk=current.every(function(item,i){return item===q.ans[i];});
+  list.querySelectorAll('.order-item').forEach(function(li){li.style.pointerEvents='none';});
+  if(btn)btn.disabled=true;
+  showFeedback(qid,qi,isOk,isOk?q.exp:'Correct order: '+q.ans.join(' → ')+'. '+q.exp);
+  if(isOk)STATE[qid].correct++;
+  STATE[qid].answered++;
+  updateScoreDisplay(qid);
+}
+function showFeedback(qid,qi,isOk,msg){
+  var fb=document.getElementById(qid+'-fb-'+qi);
+  if(!fb)return;
+  fb.className='q-feedback show '+(isOk?'correct':'wrong');
+  fb.textContent=(isOk?'✓ Correct! ':'✗ Incorrect. ')+msg;
+}
+function updateScoreDisplay(qid){
+  var s=STATE[qid];
+  var el=document.getElementById('sc-'+qid);
+  if(el)el.textContent=s.correct+' correct / '+s.answered+' answered / '+s.total+' total';
+  if(s.answered===s.total&&s.total>0){
+    var sb=document.getElementById('sb-'+qid);
+    if(sb){
+      sb.classList.add('show');
+      var pct=Math.round((s.correct/s.total)*100);
+      var msg=pct>=80?' Excellent!':pct>=60?' Good effort!':' Keep studying!';
+      sb.innerHTML='<div class="score-big">'+s.correct+'/'+s.total+'</div><div class="score-lbl">'+pct+'% —'+msg+'</div>';
+    }
+  }
+}
+function resetQuiz(qid){
+  if(qid==='w4qfinal')w4FinalBuilt=false;
+  if(qid==='w5qfinal')w5FinalBuilt=false;
+  var container=document.getElementById('qc-'+qid);
+  if(container)container.innerHTML='';
+  var sb=document.getElementById('sb-'+qid);
+  if(sb)sb.classList.remove('show');
+  STATE[qid]=null;
+  renderQuiz(qid);
+}
+function escHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+</script>
+</body>
+</html>
