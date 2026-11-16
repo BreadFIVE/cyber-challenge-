@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VDE Ultimate Study Guide</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#1a1a2e;color:#e2e8f0;min-height:100vh}
+/* TOP NAV */
+.top-nav{background:#0F6CBF;padding:0;display:flex;overflow-x:auto;flex-wrap:nowrap;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.4)}
+.top-nav button{background:none;border:none;color:rgba(255,255,255,.75);padding:12px 16px;font-size:12px;font-weight:500;cursor:pointer;white-space:nowrap;border-bottom:3px solid transparent;transition:all .15s;flex-shrink:0}
+.top-nav button:hover{color:#fff;background:rgba(255,255,255,.1)}
+.top-nav button.active{color:#fff;border-bottom-color:#fff}
+/* MAIN */
+.main{max-width:860px;margin:0 auto;padding:20px 16px}
+.section{display:none}.section.active{display:block}
+h2.sec-title{font-size:22px;font-weight:700;color:#90cdf4;margin-bottom:4px}
+.sec-sub{font-size:13px;color:#718096;margin-bottom:20px;border-bottom:1px solid #2d3748;padding-bottom:12px}
+/* CARDS */
+.card{background:#16213e;border:1px solid #2d3748;border-radius:10px;padding:16px;margin-bottom:14px}
+.card h3{font-size:15px;font-weight:600;color:#90cdf4;margin-bottom:8px}
+.card p,.card li{font-size:13.5px;line-height:1.7;color:#cbd5e0}
+.card ul{padding-left:18px}.card li{margin-bottom:4px}
+.tag{display:inline-block;font-size:10px;padding:2px 8px;border-radius:20px;margin-right:6px;margin-bottom:4px;font-weight:600}
+.tag-key{background:#2c5282;color:#90cdf4}.tag-warn{background:#744210;color:#f6ad55}.tag-good{background:#276749;color:#9ae6b4}
+pre.slide-code{background:#0d1117;border:1px solid #2d3748;border-radius:8px;padding:12px;font-size:12px;font-family:'Courier New',monospace;line-height:1.7;color:#a8d8a8;overflow-x:auto;margin:10px 0}
+/* STACK DIAGRAM */
+.stack-diagram{display:flex;gap:8px;align-items:flex-start;flex-wrap:wrap;margin:12px 0}
+.stack-col{flex:0 0 auto}
+.s-row{display:flex;align-items:stretch;margin-bottom:3px;position:relative}
+.s-addr{font-size:10px;font-family:'Courier New',monospace;color:#4a5568;width:72px;padding:6px 6px 6px 0;text-align:right;flex-shrink:0;line-height:1.3}
+.s-cell{flex:1 1 180px;min-width:160px;border:1px solid #2d3748;border-radius:5px;padding:6px 10px;font-size:12px;cursor:pointer;transition:all .15s;display:flex;align-items:center;line-height:1.3}
+.s-cell:hover{opacity:.85}
+.s-buf{background:#1a4731;border-color:#276749;color:#9ae6b4}
+.s-ebp{background:#1a365d;border-color:#2c5282;color:#90cdf4}
+.s-ret{background:#553320;border-color:#9c4221;color:#fc8181}
+.s-param{background:#1a202c;border-color:#4a5568;color:#a0aec0}
+.s-esp{background:#1c2438;border-color:#2d4a7a}
+.reg-tag{font-size:9px;position:absolute;right:calc(100% - 68px);top:50%;transform:translateY(-50%);color:#63b3ed;font-weight:700;font-family:'Courier New',monospace;white-space:nowrap}
+.s-info{background:#0d1b2e;border:1px solid #2d3748;border-radius:8px;padding:12px;margin-top:8px;font-size:13px;line-height:1.6;color:#a0aec0;min-height:48px}
+/* FLIP CARDS */
+.flip-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;margin:12px 0}
+.flip-card{height:130px;perspective:800px;cursor:pointer}
+.flip-inner{position:relative;width:100%;height:100%;transition:transform .5s;transform-style:preserve-3d}
+.flip-card.flipped .flip-inner{transform:rotateY(180deg)}
+.flip-front,.flip-back{position:absolute;width:100%;height:100%;backface-visibility:hidden;border-radius:10px;padding:14px;display:flex;flex-direction:column;justify-content:center}
+.flip-front{background:#16213e;border:1px solid #2d3748}
+.flip-back{background:#1a365d;border:1px solid #2c5282;transform:rotateY(180deg)}
+.flip-front .q{font-size:13px;font-weight:500;color:#e2e8f0;line-height:1.5}
+.flip-front .hint{font-size:10px;color:#4a5568;margin-top:6px}
+.flip-back .a{font-size:13px;color:#90cdf4;line-height:1.5}
+/* PROLOGUE STEPPER */
+.stepper{background:#16213e;border:1px solid #2d3748;border-radius:10px;padding:16px;margin:12px 0}
+.step-nav{display:flex;gap:8px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
+.step-btn{background:#0F6CBF;border:none;color:#fff;border-radius:6px;padding:7px 16px;font-size:12px;cursor:pointer}
+.step-btn:disabled{background:#2d3748;color:#4a5568;cursor:default}
+.step-btn.sec{background:#2d3748;color:#a0aec0}
+.step-num{font-size:12px;color:#4a5568;margin-left:auto}
+.step-dots{display:flex;gap:5px}
+.sdot{width:7px;height:7px;border-radius:50%;background:#2d3748;transition:background .2s}
+.sdot.done{background:#0F6CBF}
+.code-block{background:#0d1117;border:1px solid #2d3748;border-radius:8px;padding:12px;font-family:'Courier New',monospace;font-size:12.5px;line-height:1.8;margin-bottom:10px}
+.code-line{padding:1px 4px;border-radius:3px;transition:background .2s;color:#a8d8a8}
+.code-line.hl{background:rgba(15,108,191,.3);color:#90cdf4}
+.explain{background:#0d1b2e;border-left:3px solid #0F6CBF;border-radius:0 8px 8px 0;padding:12px;font-size:13px;line-height:1.7;color:#a0aec0}
+.explain strong{color:#e2e8f0}
+.regs-mini{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.reg-pill{background:#1a2744;border:1px solid #2d3748;border-radius:6px;padding:5px 10px;font-size:11px}
+.reg-pill .rn{font-family:'Courier New',monospace;color:#63b3ed;font-weight:700}
+.reg-pill .rv{color:#718096;margin-left:4px}
+/* OVERFLOW SIM */
+.sim-wrap{background:#16213e;border:1px solid #2d3748;border-radius:10px;padding:16px;margin:12px 0}
+.sim-controls{display:flex;align-items:center;gap:12px;margin-bottom:14px;flex-wrap:wrap}
+.sim-controls label{font-size:13px;color:#718096}
+.sim-slider{flex:1;min-width:100px;accent-color:#0F6CBF}
+.sim-val{font-size:13px;font-weight:600;min-width:80px}
+.sim-val.safe{color:#9ae6b4}.sim-val.warn{color:#f6ad55}.sim-val.danger{color:#fc8181}
+/* QUIZ */
+.qblock{background:#16213e;border:1px solid #2d3748;border-radius:10px;padding:16px;margin-bottom:12px}
+.qtext{font-size:14px;font-weight:500;color:#e2e8f0;margin-bottom:12px;line-height:1.6}
+.qopts{display:flex;flex-direction:column;gap:7px;margin-bottom:10px}
+.qopt{background:#1a202c;border:1px solid #2d3748;border-radius:7px;padding:10px 14px;font-size:13px;color:#a0aec0;cursor:pointer;text-align:left;transition:all .1s}
+.qopt:hover:not(:disabled){background:#1e2d4a;border-color:#0F6CBF;color:#e2e8f0}
+.qopt.right{background:#1a4731;border-color:#276749;color:#9ae6b4}
+.qopt.wrong{background:#4a1528;border-color:#9c4221;color:#fc8181}
+.qopt.show{background:#1a4731;border-color:#276749;color:#9ae6b4}
+.qfb{font-size:13px;padding:10px 12px;border-radius:7px;margin-bottom:8px;line-height:1.6;display:none}
+.qfb.show{display:block}
+.qfb.ok{background:#1a4731;border:1px solid #276749;color:#9ae6b4}
+.qfb.bad{background:#4a1528;border:1px solid #9c4221;color:#fc8181}
+.qnext{background:#0F6CBF;color:#fff;border:none;border-radius:7px;padding:8px 18px;font-size:13px;cursor:pointer;display:none}
+.qscore{font-size:13px;color:#4a5568;margin-bottom:16px}
+/* SPECIFIER TABLE */
+.spec-table{width:100%;border-collapse:collapse;font-size:13px}
+.spec-table th{background:#1a365d;color:#90cdf4;padding:8px 12px;text-align:left;border:1px solid #2d3748}
+.spec-table td{padding:8px 12px;border:1px solid #2d3748;color:#a0aec0;vertical-align:top}
+.spec-table tr:hover td{background:#16213e}
+/* COMPARE TABLE */
+.cmp-table{width:100%;border-collapse:collapse;font-size:13px;margin:12px 0}
+.cmp-table th{background:#1a365d;color:#90cdf4;padding:8px 12px;border:1px solid #2d3748;text-align:left}
+.cmp-table td{padding:8px 12px;border:1px solid #2d3748;color:#a0aec0;vertical-align:top}
+.cmp-table tr:nth-child(even) td{background:#111827}
+</style>
+</head>
+<body>
+
+<div class="top-nav" id="nav">
+  <button class="active" onclick="show('cia')">CIA & Terms</button>
+  <button onclick="show('integers')">Integers</button>
+  <button onclick="show('stack')">Stack Frames</button>
+  <button onclick="show('bufover')">Buffer Overflow</button>
+  <button onclick="show('unsafe')">Unsafe Functions</button>
+  <button onclick="show('shellcode')">Shellcode & NOP</button>
+  <button onclick="show('fmtstr')">Format Strings</button>
+  <button onclick="show('heap')">Heap</button>
+  <button onclick="show('fuzzing')">Fuzzing</button>
+  <button onclick="show('afl')">AFL & Coverage</button>
+  <button onclick="show('protections')">Protections</button>
+  <button onclick="show('quiz')">🧠 Mega Quiz</button>
+</div>
+
+<div class="main">
+
+<!-- ═══════════════════════════ CIA & TERMS ═══════════════════════════ -->
+<div id="sec-cia" class="section active">
+<h2 class="sec-title">CIA Triad & Core Terminology</h2>
+<p class="sec-sub">Week 1 — Foundations. These definitions come up in true/false and statement questions.</p>
+<div class="card"><h3>CIA Triad</h3>
+<ul>
+<li><strong style="color:#90cdf4">Confidentiality</strong> — keeping data secret or private; controlling who can access information</li>
+<li><strong style="color:#90cdf4">Integrity</strong> — data is trustworthy and free from tampering; it must be authentic, accurate, and reliable</li>
+<li><strong style="color:#90cdf4">Availability</strong> — systems, networks, and applications must function as they should and when they should</li>
+</ul>
+<p style="margin-top:8px;color:#718096;font-size:12px">The CIA triad is a common model that forms the basis for the development of security systems.</p>
+</div>
+<div class="flip-grid">
+<div class="flip-card" onclick="this.classList.toggle('flipped')"><div class="flip-inner"><div class="flip-front"><div class="q">What is a vulnerability?</div><div class="hint">Click to reveal</div></div><div class="flip-back"><div class="a">A flaw in a system's security that leads to an attacker using the system in a manner other than the designer intended.</div></div></div></div>
+<div class="flip-card" onclick="this.classList.toggle('flipped')"><div class="flip-inner"><div class="flip-front"><div class="q">What is the difference between 'exploit' (verb) and 'an exploit' (noun)?</div><div class="hint">Click to reveal</div></div><div class="flip-back"><div class="a"><strong>Exploit (verb):</strong> to take advantage of a vulnerability. <br><strong>An exploit (noun):</strong> the tool, code, or instructions used to do so.</div></div></div></div>
+<div class="flip-card" onclick="this.classList.toggle('flipped')"><div class="flip-inner"><div class="flip-front"><div class="q">What is a 0-day exploit?</div><div class="hint">Click to reveal</div></div><div class="flip-back"><div class="a">An exploit for a vulnerability that has not been publicly disclosed — no patch exists yet.</div></div></div></div>
+<div class="flip-card" onclick="this.classList.toggle('flipped')"><div class="flip-inner"><div class="flip-front"><div class="q">Intel syntax: mov eax, 1 — what is the destination? what is the source?</div><div class="hint">Click to reveal</div></div><div class="flip-back"><div class="a">Intel: destination first. eax is the destination, 1 is the source. AT&T is the opposite: movl $1, %eax (source first).</div></div></div></div>
+<div class="flip-card" onclick="this.classList.toggle('flipped')"><div class="flip-inner"><div class="flip-front"><div class="q">What register holds the address of the NEXT instruction?</div><div class="hint">Click to reveal</div></div><div class="flip-back"><div class="a">EIP — Instruction Pointer. Controlling EIP = controlling program execution.</div></div></div></div>
+<div class="flip-card" onclick="this.classList.toggle('flipped')"><div class="flip-inner"><div class="flip-front"><div class="q">What does ESP hold?</div><div class="hint">Click to reveal</div></div><div class="flip-back"><div class="a">ESP = Stack Pointer. Always points to the current top of the stack.</div></div></div></div>
+</div>
+</div>
+
+<!-- ═══════════════════════════ INTEGERS ═══════════════════════════ -->
+<div id="sec-integers" class="section">
+<h2 class="sec-title">Integer Overflow & Underflow</h2>
+<p class="sec-sub">Week 3 — Know the ranges, the wrap-around behaviour, and what happens in code.</p>
+<div class="card"><h3>Key Ranges (Exam-relevant only)</h3>
+<table class="spec-table">
+<tr><th>Type</th><th>Size</th><th>Range</th></tr>
+<tr><td>char (signed)</td><td>1 byte</td><td>−128 to 127</td></tr>
+<tr><td>unsigned char</td><td>1 byte</td><td>0 to 255</td></tr>
+</table>
+<p style="margin-top:8px;font-size:12px;color:#718096">Note: short int, int, unsigned int, long int — marked "N/A for exam" on the slides.</p>
+</div>
+<div class="card"><h3>Overflow — wraps to 0</h3>
+<pre class="slide-code">unsigned char i = 255;
+i = i + 1;  // i is now 0 — overflow!
+// 255 = 11111111, + 1 = 100000000 (9 bits) → truncated to 00000000</pre>
+<p>When the result exceeds the maximum, it wraps around. A clock analogy: 23:59 + 1 minute = 00:00.</p>
+</div>
+<div class="card"><h3>Underflow — wraps to max</h3>
+<pre class="slide-code">unsigned char n = 0;
+printf("n-1 = %hhu\n", n-1);  // prints 255</pre>
+<p>0 − 1 on an unsigned type wraps to the maximum value (255 for unsigned char).</p>
+</div>
+<div class="card"><h3>Security Implication</h3>
+<p>If an overflowed integer value is used as a buffer size in malloc() or an array index, a dangerously small buffer is allocated. The caller then writes its expected large amount of data, causing a buffer overflow.</p>
+<pre class="slide-code">unsigned int size = user_value;  // attacker supplies huge value
+size = size * 4;   // multiplication overflows → wraps to small value
+char *buf = malloc(size);   // tiny buffer allocated
+memcpy(buf, data, user_value * 4);  // OVERFLOW!</pre>
+</div>
+<div class="flip-grid">
+<div class="flip-card" onclick="this.classList.toggle('flipped')"><div class="flip-inner"><div class="flip-front"><div class="q">unsigned char x = 200; x = x + 100; What is x?</div><div class="hint">200 + 100 = ?</div></div><div class="flip-back"><div class="a">44. (200 + 100 = 300. 300 mod 256 = 44.)</div></div></div></div>
+<div class="flip-card" onclick="this.classList.toggle('flipped')"><div class="flip-inner"><div class="flip-front"><div class="q">An unsigned loop: for(unsigned int i=10; i>=0; i--) — what happens?</div><div class="hint">Think about what unsigned >= 0 means</div></div><div class="flip-back"><div class="a">Infinite loop. An unsigned int is always >= 0. When i reaches 0 and decrements, it wraps to UINT_MAX rather than going negative.</div></div></div></div>
+<div class="flip-card" onclick="this.classList.toggle('flipped')"><div class="flip-inner"><div class="flip-front"><div class="q">unsigned char x = 3; x = x * x * x * x * x ... — does the loop stop?</div><div class="hint">Mock exam Q8</div></div><div class="flip-back"><div class="a">Yes. x grows rapidly until x*x*x overflows, wrapping to a small value (possibly 0), which terminates the loop.</div></div></div></div>
+<div class="flip-card" onclick="this.classList.toggle('flipped')"><div class="flip-inner"><div class="flip-front"><div class="q">int x = INT_MAX; x = x + 1; Why is this an overflow?</div><div class="hint">Mock exam Q10 — the ACT of incrementing</div></div><div class="flip-back"><div class="a">x is incremented which causes the overflow. INT_MAX + 1 exceeds the signed int maximum. (x being set to INT_MAX is just the setup — the increment is the cause.)</div></div></div></div>
+</div>
+</div>
+
+<!-- ═══════════════════════════ STACK FRAMES ═══════════════════════════ -->
+<div id="sec-stack" class="section">
+<h2 class="sec-title">Stack Frames</h2>
+<p class="sec-sub">Weeks 4–5 — Click any cell to learn about it. Step through the prologue. Watch the overflow.</p>
+
+<div class="card"><h3>Stack Layout — click a cell</h3>
+<p style="font-size:12px;color:#718096;margin-bottom:10px">Low address → high address (stack grows downward)</p>
+<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px">
+<span class="tag tag-good">Local vars (low)</span><span class="tag tag-key">Saved EBP</span><span class="tag tag-warn">Return address</span><span style="display:inline-block;font-size:10px;padding:2px 8px;border-radius:20px;margin-right:6px;background:#1a202c;color:#a0aec0">Params (high)</span>
+</div>
+<div id="stack-diag"></div>
+<div class="s-info" id="stack-info">Click a cell above to learn what it is and why it matters for exploits.</div>
+</div>
+
+<div class="stepper">
+<div class="step-nav">
+<button class="step-btn" id="sp-prev" onclick="spStep(-1)" disabled>← Back</button>
+<button class="step-btn" id="sp-next" onclick="spStep(1)">Next →</button>
+<button class="step-btn sec" onclick="spReset()">Reset</button>
+<span class="step-num" id="sp-num">Step 1 / 6</span>
+<div class="step-dots" id="sp-dots"></div>
+</div>
+<div class="code-block" id="sp-code"></div>
+<div class="explain" id="sp-explain"></div>
+<div class="regs-mini" id="sp-regs"></div>
+</div>
+
+<div class="sim-wrap">
+<p style="font-size:13px;color:#90cdf4;font-weight:600;margin-bottom:10px">Buffer Overflow Simulator — drag to write bytes into the buffer</p>
+<div class="sim-controls">
+<label>Bytes written:</label>
+<input type="range" class="sim-slider" id="sim-sl" min="0" max="52" value="0" oninput="simUpdate(this.value)">
+<span class="sim-val safe" id="sim-val">0 bytes</span>
+</div>
+<div id="sim-stack"></div>
+<div class="s-info" id="sim-info" style="margin-top:10px">Move the slider to start writing into the buffer and watch what gets corrupted.</div>
+</div>
+</div>
+
+<!-- ═══════════════════════════ BUFFER OVERFLOW ═══════════════════════════ -->
+<div id="sec-bufover" class="section">
+<h2 class="sec-title">Buffer Overflow</h2>
+<p class="sec-sub">Weeks 4–5 — Know the mechanism, the payload structure, and the compiler flags.</p>
+<div class="card"><h3>How it works</h3>
+<ul>
+<li>C has <strong>no default bounds checking</strong> — writing past a buffer's end is silent</li>
+<li>The buffer is at a lower address than the return address — overflow travels upward</li>
+<li>Overflowing past the buffer hits: <strong>saved EBP → return address</strong></li>
+<li>When the function executes RET, the corrupted return address is loaded into EIP</li>
+<li>The attacker now controls where execution goes next</li>
+</ul>
+</div>
+<div class="card"><h3>Two Scenarios from the Slides</h3>
+<ul>
+<li><strong>Scenario 1:</strong> Overwrite the return address with a crafted address → EIP redirected to attacker's code (shellcode)</li>
+<li><strong>Scenario 2:</strong> Overwrite other local variables on the stack → can trigger other vulnerabilities or cause unintended behaviour</li>
+</ul>
+</div>
+<div class="card"><h3>Payload Structure — NOP Sled Exploit</h3>
+<pre class="slide-code">(0x90 × N) + shellcode + [padding] + buffer_start_address
+
+NOP sled ──────────────────────────────▶ shellcode ──▶ return addr overwrites</pre>
+<ul>
+<li><strong>0x90</strong> = NOP (No Operation) — does nothing, EIP slides through</li>
+<li><strong>NOP sled</strong> — fills the buffer before shellcode, widening the target area</li>
+<li><strong>Return address</strong> — overwritten to point anywhere in the NOP sled</li>
+<li>The payload must be <strong>larger than the buffer</strong> to overflow into the return address</li>
+</ul>
+</div>
+<div class="card"><h3>Compiler Flags (Exam-listed)</h3>
+<table class="cmp-table">
+<tr><th>Flag</th><th>Effect</th></tr>
+<tr><td style="font-family:'Courier New';color:#a8d8a8">-fno-stack-protector</td><td>Disables stack canaries — intentionally vulnerable</td></tr>
+<tr><td style="font-family:'Courier New';color:#a8d8a8">-fstack-protector-all</td><td>Inserts canaries into ALL functions with local buffers</td></tr>
+<tr><td style="font-family:'Courier New';color:#a8d8a8">-z execstack</td><td>Makes the stack executable (disables NX)</td></tr>
+<tr><td style="font-family:'Courier New';color:#a8d8a8">echo 0 | sudo tee /proc/sys/kernel/randomize_va_space</td><td>Disables ASLR</td></tr>
+</table>
+</div>
+<div class="flip-grid">
+<div class="flip-card" onclick="this.classList.toggle('flipped')"><div class="flip-inner"><div class="flip-front"><div class="q">A buffer is 32 bytes + 4 bytes EBP. How many bytes of padding to reach the return address?</div><div class="hint">32 + 4 = ?</div></div><div class="flip-back"><div class="a">36 bytes. Fill 32-byte buffer + overwrite 4-byte saved EBP = 36 bytes before reaching the return address slot.</div></div></div></div>
+<div class="flip-card" onclick="this.classList.toggle('flipped')"><div class="flip-inner"><div class="flip-front"><div class="q">char string[10]; — how many characters can it actually hold?</div><div class="hint">Don't forget the null byte</div></div><div class="flip-back"><div class="a">9 + the NULL byte. One byte is always reserved for the '\0' string terminator.</div></div></div></div>
+<div class="flip-card" onclick="this.classList.toggle('flipped')"><div class="flip-inner"><div class="flip-front"><div class="q">Why is the NOP sled larger the better?</div><div class="hint">Address precision</div></div><div class="flip-back"><div class="a">A larger NOP sled means a larger target window. The guessed return address only needs to land anywhere in the sled — not exactly on the shellcode.</div></div></div></div>
+<div class="flip-card" onclick="this.classList.toggle('flipped')"><div class="flip-inner"><div class="flip-front"><div class="q">Does a non-executable stack stop the return address being overwritten?</div><div class="hint">Slide quote</div></div><div class="flip-back"><div class="a">NO. "REM: It doesn't stop over-writing of the return address." — direct quote from the slides.</div></div></div></div>
+</div>
+</div>
+
+<!-- ═══════════════════════════ UNSAFE FUNCTIONS ═══════════════════════════ -->
+<div id="sec-unsafe" class="section">
+<h2 class="sec-title">Unsafe C Functions & Safe Replacements</h2>
+<p class="sec-sub">Weeks 4–5 — Every pair is exam-tested. Know both the vulnerability and the fix.</p>
+<div class="card">
+<table class="cmp-table">
+<tr><th>Unsafe</th><th>Why dangerous</th><th>Safe replacement</th></tr>
+<tr><td style="font-family:'Courier New';color:#fc8181">gets(buf)</td><td>No length limit whatsoever — reads until newline/EOF</td><td style="font-family:'Courier New';color:#9ae6b4">fgets(buf, sizeof(buf), stdin)</td></tr>
+<tr><td style="font-family:'Courier New';color:#fc8181">strcpy(dst, src)</td><td>Copies until null byte with no length limit</td><td style="font-family:'Courier New';color:#9ae6b4">strncpy(dst, src, sizeof(dst)-1)</td></tr>
+<tr><td style="font-family:'Courier New';color:#fc8181">strcat(dst, src)</td><td>Appends with no check on remaining space</td><td style="font-family:'Courier New';color:#9ae6b4">strncat(dst, src, sizeof(dst)-strlen(dst)-1)</td></tr>
+<tr><td style="font-family:'Courier New';color:#fc8181">sprintf(buf, fmt, ...)</td><td>Writes to buffer with no length limit</td><td style="font-family:'Courier New';color:#9ae6b4">snprintf(buf, sizeof(buf), fmt, ...)</td></tr>
+</table>
+</div>
+<div class="card"><h3>strncpy gotcha — always null terminate manually</h3>
+<pre class="slide-code">char dest[10];
+strncpy(dest, src, sizeof(dest) - 1);  // copies at most 9 bytes
+dest[sizeof(dest) - 1] = '\0';          // MUST manually null-terminate!</pre>
+<p>If src fills all n bytes, strncpy does NOT add a null terminator. Subsequent string operations will overread.</p>
+</div>
+<div class="card"><h3>The fgets heap overflow pattern — mock exam Q12</h3>
+<pre class="slide-code">char *buffer = malloc(16);
+char *target = malloc(16);
+fgets(buffer, 100, stdin);   // ← tells fgets buffer is 100 bytes, but it's only 16!
+// overflow spills into adjacent heap memory where target lives</pre>
+<p><span class="tag tag-warn">Heap overflow</span> fgets is given 100 as the limit but the buffer is only 16 bytes — adjacent heap chunks are corrupted.</p>
+</div>
+</div>
+
+<!-- ═══════════════════════════ SHELLCODE ═══════════════════════════ -->
+<div id="sec-shellcode" class="section">
+<h2 class="sec-title">Shellcode & NOP Sled</h2>
+<p class="sec-sub">Week 5 — Know the definition, the NOP sled purpose, and the bypass techniques.</p>
+<div class="card"><h3>What is Shellcode?</h3>
+<ul>
+<li>A set of <strong>x86 machine instructions</strong> (not C code) injected into memory and executed by an exploited program</li>
+<li>The term comes from its original purpose: spawning a <strong>root shell</strong></li>
+<li>Executed by the CPU directly — no compilation needed</li>
+<li>EIP is set to the shellcode's address, so execution begins there</li>
+<li>Size matters when delivered via buffer overflow — it must fit within the buffer</li>
+</ul>
+<p style="margin-top:8px"><span class="tag tag-key">Mock Q27</span> "Shellcode is a sequence of hexadecimal numbers that represent operations to be interpreted in the context of the operating system."</p>
+</div>
+<div class="card"><h3>Shellcode does NOT differ between stack and heap</h3>
+<p>Shellcode is machine code — it executes the same regardless of where it is stored in memory. <span class="tag tag-key">Mock Q14</span> Answer: "It doesn't."</p>
+</div>
+<div class="card"><h3>NOP Sled (0x90)</h3>
+<pre class="slide-code">Memory: [NOP][NOP][NOP]...[NOP][SHELLCODE][padding...]
+                    ↑
+            EIP lands anywhere here and slides to shellcode</pre>
+<ul>
+<li><strong>0x90</strong> = NOP instruction — does nothing, EIP advances by 1</li>
+<li>Fills the buffer <strong>before</strong> the shellcode</li>
+<li>If EIP is slightly wrong, it lands in the sled and slides to shellcode anyway</li>
+<li>Larger sled = better chance of success</li>
+</ul>
+<p style="margin-top:8px"><span class="tag tag-key">Mock Q19</span> "A NOP sled allows the return address from a function to move within a predefined memory address range, which makes the success of the exploit more probable."</p>
+</div>
+<div class="card"><h3>Bypassing Non-Executable Stack (from slides)</h3>
+<ul>
+<li><strong>ret2libc</strong> — take control of a stack frame to call a libc function (e.g. chmod, system). libc is always loaded in executable memory.</li>
+<li><strong>ret2data</strong> — place injected code in the data segment and jump to it</li>
+<li><strong>ret2code / ROP</strong> — use existing code snippets (gadgets) in the program to perform malicious actions</li>
+<li><strong>Patching</strong> — patch the executable or use runtime manipulation</li>
+</ul>
+</div>
+<div class="flip-grid">
+<div class="flip-card" onclick="this.classList.toggle('flipped')"><div class="flip-inner"><div class="flip-front"><div class="q">ret2libc — True or False: it takes control of a complete stack frame?</div><div class="hint">Mock Q2</div></div><div class="flip-back"><div class="a">TRUE. ret2libc crafts a fake stack frame with the libc function address as the return address and the required arguments placed on the stack.</div></div></div></div>
+<div class="flip-card" onclick="this.classList.toggle('flipped')"><div class="flip-inner"><div class="flip-front"><div class="q">ret2data — True or False: places injected code in the data segment?</div><div class="hint">Mock Q3</div></div><div class="flip-back"><div class="a">TRUE. ret2data stores the payload in the .data segment and redirects the return address there — but W^X prevents this on modern systems.</div></div></div></div>
+<div class="flip-card" onclick="this.classList.toggle('flipped')"><div class="flip-inner"><div class="flip-front"><div class="q">Why must shellcode avoid null bytes (0x00)?</div><div class="hint">String functions</div></div><div class="flip-back"><div class="a">String functions like strcpy() and gets() treat 0x00 as the string terminator and stop copying — truncating the shellcode before delivery.</div></div></div></div>
+</div>
+</div>
+
+<!-- ═══════════════════════════ FORMAT STRINGS ═══════════════════════════ -->
+<div id="sec-fmtstr" class="section">
+<h2 class="sec-title">Format Specifiers & Format String Vulnerabilities</h2>
+<p class="sec-sub">Week 6 — Know all 7 specifiers, both vulnerability types, and why printf(user_input) is dangerous.</p>
+
+<div class="card"><h3>Format Specifiers — All 7 for the exam</h3>
+<table class="spec-table">
+<tr><th>Specifier</th><th>Prints</th><th>Security relevance</th></tr>
+<tr><td>%c</td><td>Single character</td><td>Can read char values off stack</td></tr>
+<tr><td>%d</td><td>Signed decimal integer</td><td>Reads stack values as signed ints</td></tr>
+<tr><td>%u</td><td>Unsigned decimal integer</td><td>Reads stack values as unsigned ints</td></tr>
+<tr><td>%x</td><td>Unsigned hex (lowercase)</td><td>⚠️ Classic stack leak — reads addresses as hex</td></tr>
+<tr><td>%s</td><td>Null-terminated string</td><td>⚠️ Reads string from arbitrary stack address</td></tr>
+<tr><td>%p</td><td>Pointer / memory address (hex)</td><td>⚠️ Leaks memory addresses — defeats ASLR</td></tr>
+<tr><td>%n</td><td><em>Nothing printed</em> — writes byte count to address</td><td>☠️ Enables arbitrary memory writes</td></tr>
+</table>
+<p style="margin-top:8px;font-size:12px;color:#718096">Note: fprintf is explicitly listed as NOT on the exam. Only printf and sprintf.</p>
+</div>
+
+<div class="card"><h3>Why printf() is variadic — and why that's dangerous</h3>
+<p>Format functions accept 0 or more arguments. Arguments are placed on the stack. The <strong>format string decides</strong> how many to read at runtime — it doesn't check. If there are more format specifiers than arguments, it reads whatever is on the stack next.</p>
+<pre class="slide-code">printf("%s %d %d", str, i);   // 3 specifiers, 2 args → reads garbage from stack!
+printf(user_input);            // ← VULNERABLE: user controls specifiers</pre>
+</div>
+
+<div class="card"><h3>Static vs Dynamic Format String Vulnerability</h3>
+<table class="cmp-table">
+<tr><th>Type</th><th>How it occurs</th><th>What the attacker can do</th></tr>
+<tr><td><strong>Static</strong></td><td>Fixed format string but more specifiers than arguments (e.g. extra %d)</td><td>Read stack values — info disclosure</td></tr>
+<tr><td><strong>Dynamic</strong></td><td>User input used directly as the format string: printf(user_input)</td><td>Read stack (%x, %p), write memory (%n), crash (%s with bad addr)</td></tr>
+</table>
+</div>
+
+<div class="card"><h3>Mock Exam Q11 — the most commonly missed question</h3>
+<pre class="slide-code">char input[128];
+fgets(input, sizeof(input), stdin);
+printf(input);    // ← THE VULNERABILITY IS HERE</pre>
+<p><span class="tag tag-warn">Common wrong answer:</span> "The input buffer can be overflowed" — NO, fgets limits input correctly.</p>
+<p><span class="tag tag-good">Correct answer:</span> "A user-controlled input string is passed directly as the format string to printf." — This is a <strong>format string vulnerability</strong>, not a buffer overflow.</p>
+</div>
+
+<div class="flip-grid">
+<div class="flip-card" onclick="this.classList.toggle('flipped')"><div class="flip-inner"><div class="flip-front"><div class="q">What does %n do and why is it so dangerous?</div><div class="hint">It writes, not reads</div></div><div class="flip-back"><div class="a">%n writes the number of bytes printed so far to the address provided as the argument. Attacker controls the address and value — arbitrary memory write.</div></div></div></div>
+<div class="flip-card" onclick="this.classList.toggle('flipped')"><div class="flip-inner"><div class="flip-front"><div class="q">printf("%x %x %x") with no arguments — what happens?</div><div class="hint">Stack reading</div></div><div class="flip-back"><div class="a">printf reads three values from the stack (wherever arguments should be) and prints them as hex. Leaks stack contents including addresses and sensitive values.</div></div></div></div>
+<div class="flip-card" onclick="this.classList.toggle('flipped')"><div class="flip-inner"><div class="flip-front"><div class="q">What is the safe way to print user input with printf?</div><div class="hint">Always a fixed format string</div></div><div class="flip-back"><div class="a">printf("%s", user_input); — always use a fixed format string with user data as the argument, never as the format string itself.</div></div></div></div>
+</div>
+</div>
+
+<!-- ═══════════════════════════ HEAP ═══════════════════════════ -->
+<div id="sec-heap" class="section">
+<h2 class="sec-title">Heap & Heap Overflow</h2>
+<p class="sec-sub">Week 7 — Know the three memory regions, the four functions, and what heap overflow does.</p>
+<div class="card"><h3>Three Memory Regions</h3>
+<table class="cmp-table">
+<tr><th>Region</th><th>What's stored</th><th>Lifespan</th></tr>
+<tr><td>.data / .bss</td><td>Global variables (.data = initialised, .bss = uninitialised)</td><td>Entire program</td></tr>
+<tr><td>Stack</td><td>Local variables, return addresses, function parameters</td><td>Duration of function call</td></tr>
+<tr><td>Heap</td><td>Dynamic memory (malloc/calloc)</td><td>Until free() is called</td></tr>
+</table>
+</div>
+<div class="card"><h3>Heap Functions — the four from the slides</h3>
+<table class="cmp-table">
+<tr><th>Function</th><th>What it does</th><th>Key difference</th></tr>
+<tr><td style="font-family:'Courier New';color:#a8d8a8">malloc(n)</td><td>Allocates n bytes on heap</td><td>Does NOT initialise memory</td></tr>
+<tr><td style="font-family:'Courier New';color:#a8d8a8">calloc(n, size)</td><td>Allocates n×size bytes on heap</td><td>Initialises ALL bytes to zero</td></tr>
+<tr><td style="font-family:'Courier New';color:#a8d8a8">realloc(ptr, newSize)</td><td>Resizes existing allocation</td><td>May return a new pointer</td></tr>
+<tr><td style="font-family:'Courier New';color:#a8d8a8">free(ptr)</td><td>Returns memory to system</td><td>Does NOT zero the memory</td></tr>
+</table>
+<p style="margin-top:8px;font-size:12px;color:#718096">malloc returns NULL on failure — always check before use. If free() is never called = memory leak.</p>
+</div>
+<div class="card"><h3>Heap Overflow</h3>
+<p>Just like a stack buffer overflow but on the heap. Writing past the end of a heap buffer corrupts adjacent heap chunks.</p>
+<pre class="slide-code">char *buf1 = malloc(10);
+char *buf2 = malloc(10);
+strcpy(buf1, "AAAAAAAAAAAAAAAAAAA");  // overflows into buf2!</pre>
+<p>buf1 and buf2 are adjacent on the heap. Overflowing buf1 writes into buf2's data — or into heap chunk metadata.</p>
+</div>
+<div class="card"><h3>Memory Leak</h3>
+<p>If malloc'd memory is never freed, it is never returned to the allocator. Available heap memory shrinks over time. The slides call this a "Memory Leak" — situations where there are objects on the heap no longer used.</p>
+</div>
+</div>
+
+<!-- ═══════════════════════════ FUZZING ═══════════════════════════ -->
+<div id="sec-fuzzing" class="section">
+<h2 class="sec-title">Fuzzing & Testing Methods</h2>
+<p class="sec-sub">Weeks 8–9 — Know all three test types, all three fuzzing methods, the lifecycle, zzuf, eog.</p>
+
+<div class="card"><h3>Testing Methods</h3>
+<table class="cmp-table">
+<tr><th>Method</th><th>Source code?</th><th>Description</th></tr>
+<tr><td><strong>White Box</strong></td><td>Full access</td><td>Review code line by line. Finds internal bugs, logic errors, memory leaks. Intel Pentium FDIV bug — found via black box.</td></tr>
+<tr><td><strong>Black Box</strong></td><td>None</td><td>Test via inputs/outputs only — like an attacker. Intel Pentium FDIV bug — found via black box.</td></tr>
+<tr><td><strong>Grey Box</strong></td><td>Partial</td><td>Some internal knowledge, e.g. from documentation or disassembly.</td></tr>
+</table>
+</div>
+
+<div class="card"><h3>Fuzzing Lifecycle (6 steps)</h3>
+<ol style="padding-left:18px;color:#a0aec0;font-size:13.5px;line-height:2">
+<li><strong>Identify the target</strong></li>
+<li><strong>Identify inputs</strong> — file, stdin, network, etc.</li>
+<li><strong>Generate fuzzed data</strong> — using one of the methods below</li>
+<li><strong>Execute fuzzed data</strong> — run the target with the input</li>
+<li><strong>Monitor for exceptions</strong> — log crashes, hangs</li>
+<li><strong>Determine exploitability</strong> — is EIP controlled? Is this a real vulnerability?</li>
+</ol>
+</div>
+
+<div class="card"><h3>Three Fuzzing Methods</h3>
+<table class="cmp-table">
+<tr><th>Method</th><th>How it works</th><th>Key limitation</th></tr>
+<tr><td><strong>Mutation-based</strong></td><td>Take valid inputs and apply random changes (bit flip, byte flip, arithmetic, insert/delete). Tools: zzuf, radamsa.</td><td>Limited coverage; high false positive rate; may miss semantic bugs</td></tr>
+<tr><td><strong>Generation-based</strong></td><td>Create inputs from scratch using a format specification/grammar.</td><td>High computational overhead; requires writing a spec; limited variability</td></tr>
+<tr><td><strong>Evolutionary-based</strong></td><td>Uses genetic algorithms + feedback from the target (code coverage) to evolve inputs. Tool: AFL.</td><td>High computational overhead; potential for stagnation in local optima</td></tr>
+</table>
+</div>
+
+<div class="card"><h3>zzuf — mutation-based tool</h3>
+<pre class="slide-code">zzuf -r 0.01 -s 1000 &lt; input.txt
+# -r = ratio of bits to flip, -s = seed</pre>
+<p>One of the most common bit-flipping fuzzers. Corrupts user-contributed data by randomly flipping bits. Output is reproducible based on parameters.</p>
+</div>
+
+<div class="card"><h3>eog — the fuzzing lab target</h3>
+<p>eog = Eye of GNOME — a Linux image viewer. Used in the lab as the <strong>fuzzing target</strong>. Malformed image files are fed to it using zzuf and crashes are observed.</p>
+</div>
+
+<div class="card"><h3>File Header Mutation — Mock Q28</h3>
+<p><span class="tag tag-warn">Key point:</span> Mutation should be <strong>carefully</strong> applied to file headers to ensure the file will still be opened by the program under test.</p>
+<p style="margin-top:8px">If magic bytes or headers are corrupted too aggressively, the program rejects the file immediately — the interesting code is never reached and the fuzzer wastes cycles.</p>
+</div>
+
+<div class="flip-grid">
+<div class="flip-card" onclick="this.classList.toggle('flipped')"><div class="flip-inner"><div class="flip-front"><div class="q">Can fuzzing find ALL vulnerabilities?</div><div class="hint">Mock Q7</div></div><div class="flip-back"><div class="a">No. Fuzzing is based on probability and may only find certain ones. It cannot guarantee complete coverage.</div></div></div></div>
+<div class="flip-card" onclick="this.classList.toggle('flipped')"><div class="flip-inner"><div class="flip-front"><div class="q">Is source code needed to fuzz a binary?</div><div class="hint">Mock Q29</div></div><div class="flip-back"><div class="a">No. Black box fuzzing works on compiled binaries without source code.</div></div></div></div>
+<div class="flip-card" onclick="this.classList.toggle('flipped')"><div class="flip-inner"><div class="flip-front"><div class="q">What are the four mutation types listed in the slides?</div><div class="hint">zzuf uses one of these</div></div><div class="flip-back"><div class="a">1. Bitflip, 2. Byteflip, 3. Arithmetic (add/subtract/multiply/divide on bytes), 4. Insert/delete bytes.</div></div></div></div>
+<div class="flip-card" onclick="this.classList.toggle('flipped')"><div class="flip-inner"><div class="flip-front"><div class="q">What is static analysis of code?</div><div class="hint">Mock Q9</div></div><div class="flip-back"><div class="a">A "visual" assessment of the code to identify possible vulnerabilities — reviewing source code without executing it.</div></div></div></div>
+</div>
+</div>
+
+<!-- ═══════════════════════════ AFL & COVERAGE ═══════════════════════════ -->
+<div id="sec-afl" class="section">
+<h2 class="sec-title">AFL & Code Coverage</h2>
+<p class="sec-sub">Week 9 — AFL is the state of the art. Know exactly what it does and its limitations.</p>
+<div class="card"><h3>AFL — American Fuzzy Lop</h3>
+<ul>
+<li>Uses <strong>compile-time instrumentation</strong> and <strong>genetic algorithms</strong></li>
+<li>Discovers test cases that trigger <strong>new internal states</strong> in the target</li>
+<li>Substantially improves code coverage compared to other fuzzers</li>
+</ul>
+<h3 style="margin-top:12px">AFL's 3 Key Strategies:</h3>
+<ol style="padding-left:18px;color:#a0aec0;font-size:13.5px;line-height:2">
+<li><strong>Input Generation</strong> — generates initial seed inputs</li>
+<li><strong>Mutation-based fuzzing</strong> — flips bits, inserts/deletes bytes, other transformations</li>
+<li><strong>Feedback-Driven Optimisation</strong> — identifies inputs triggering unique behaviour → used as seeds for further mutation</li>
+<li><strong>Genetic Algorithms (seed selection)</strong> — ranks test cases by effectiveness, mutates the best ones</li>
+<li><strong>Corpus Management</strong> — maintains a corpus of interesting cases (crashes/hangs) to guide the fuzzer</li>
+</ol>
+</div>
+<div class="card"><h3>AFL Limitations — all 5 from the slides</h3>
+<ul>
+<li>Logs <strong>crashes only</strong> — won't find logic errors or info leaks</li>
+<li><strong>Stdin / file input only</strong> — can't natively fuzz network programs</li>
+<li><strong>Linux only</strong></li>
+<li>Need to <strong>build target from source</strong> using AFL tools</li>
+<li><strong>No native parallelisation</strong></li>
+</ul>
+</div>
+<div class="card"><h3>Code Coverage</h3>
+<ul>
+<li><strong>Definition:</strong> a metric determining the number of lines of code successfully validated under a test procedure</li>
+<li><strong>Good coverage:</strong> generally &gt;80%</li>
+</ul>
+<h3 style="margin-top:12px">Coverage Criteria (from slides):</h3>
+<ul>
+<li><strong>Condition</strong> — all boolean expressions evaluated for true and false</li>
+<li><strong>Decision</strong> — all if-elseif-else statements covered</li>
+<li><strong>Loop</strong> — every loop tested: zero times, once, many times</li>
+<li><strong>Entry and Exit</strong> — all possible calls and return values tested</li>
+<li><strong>Parameter Value</strong> — all possible values for parameters tested</li>
+</ul>
+</div>
+<div class="flip-grid">
+<div class="flip-card" onclick="this.classList.toggle('flipped')"><div class="flip-inner"><div class="flip-front"><div class="q">What makes AFL different from simple mutation fuzzing?</div><div class="hint">Feedback + genetic algorithms</div></div><div class="flip-back"><div class="a">AFL uses compile-time instrumentation to track code coverage. Inputs that trigger new code paths are kept as seeds for further mutation — feedback-driven evolution.</div></div></div></div>
+<div class="flip-card" onclick="this.classList.toggle('flipped')"><div class="flip-inner"><div class="flip-front"><div class="q">AFL finds a crash. What is the LAST step of the fuzzing lifecycle?</div><div class="hint">Mock Q final step</div></div><div class="flip-back"><div class="a">Determine exploitability — assess whether the crash is a real security vulnerability that could be leveraged (e.g. is EIP controlled?).</div></div></div></div>
+</div>
+</div>
+
+<!-- ═══════════════════════════ PROTECTIONS ═══════════════════════════ -->
+<div id="sec-protections" class="section">
+<h2 class="sec-title">Memory Protections</h2>
+<p class="sec-sub">Week 10 — The four protections: NX stack, W^X, Stack Canaries, ASLR. Know what each stops and what bypasses it.</p>
+
+<div class="card"><h3>1. Non-Executable Stack (NX bit)</h3>
+<ul>
+<li>Marks the stack as non-executable via the OS</li>
+<li><strong>Prevents:</strong> execution of NOP sleds and shellcode on the stack</li>
+<li><strong>Does NOT prevent:</strong> overwriting the return address — "REM: It doesn't stop over-writing of the return address." (direct slide quote)</li>
+<li><strong>Bypasses:</strong> ret2libc, ret2data, ret2code, ROP, patching</li>
+<li>Implemented via the <strong>NX bit (No eXecute)</strong> in x86 processors</li>
+</ul>
+</div>
+
+<div class="card"><h3>2. W^X (Write XOR Execute)</h3>
+<ul>
+<li>A security policy: memory is either <strong>writable OR executable — never both</strong></li>
+<li>Writable memory (e.g. heap, stack) = non-executable</li>
+<li>Executable memory (e.g. .code) = non-writable</li>
+<li>Makes it <strong>impossible to inject payloads anywhere</strong></li>
+<li>On <strong>64-bit</strong> architectures: always enabled, cannot be disabled</li>
+<li>On <strong>32-bit</strong>: can be globally disabled or selectively enabled/disabled</li>
+<li><strong>Still vulnerable to:</strong> ret2code, ROP, ret2libc, patching — you can still control the return address</li>
+</ul>
+</div>
+
+<div class="card"><h3>3. Stack Canaries</h3>
+<ul>
+<li><strong>32-bit values</strong> placed between buffers and sensitive data (return address) at compile time</li>
+<li>On buffer overflow, the canary is overwritten before the return address is reached</li>
+<li>Application detects the change on function return → outputs "*** stack-smashing detected ***"</li>
+</ul>
+<p style="margin-top:8px"><strong>Ideal stack layout</strong> (with -fstack-protector):</p>
+<pre class="slide-code">Var 1 | Var 2 | Var 3 | char buffer[32] | Canary | EBP | Return address | Parameters</pre>
+<p>Buffers are placed at the END of the frame (lowest addresses) — any overflow immediately hits the canary.</p>
+<h3 style="margin-top:12px">Three Canary Types:</h3>
+<ul>
+<li><strong>Null canary</strong> — all zeros (0x00000000)</li>
+<li><strong>Terminator canary</strong> — 0x000aff0d: 0x00 stops strcpy, 0x0a/0x0d stop gets, 0xff stops some functions</li>
+<li><strong>Random canary</strong> — randomly generated, normally starts with 0x00</li>
+</ul>
+</div>
+
+<div class="card"><h3>4. ASLR — Address Space Layout Randomisation</h3>
+<ul>
+<li>Randomises the location of the stack, heap, libraries, and executable every time a process loads</li>
+<li>Makes it <strong>difficult to know where to redirect EIP</strong> — the address of shellcode or libc changes each run</li>
+<li>Disable on Linux: <code>echo 0 | sudo tee /proc/sys/kernel/randomize_va_space</code></li>
+</ul>
+<h3 style="margin-top:12px">ASLR Weaknesses (from slides):</h3>
+<ul>
+<li>Relies on entropy — most <strong>32-bit and constrained systems have limited entropy</strong></li>
+<li><strong>Memory leaks</strong> can bypass or predict outcomes</li>
+<li><strong>Third-party libraries or older software</strong> may not be compiled with ASLR support</li>
+<li><strong>Bare-metal systems</strong> don't necessarily have an OS</li>
+</ul>
+</div>
+
+<div class="card"><h3>Quick comparison — what each protection stops</h3>
+<table class="cmp-table">
+<tr><th>Protection</th><th>Stops shellcode execution</th><th>Stops return addr overwrite</th><th>Bypassed by</th></tr>
+<tr><td>Non-exec stack</td><td>✅ On stack</td><td>❌ NO</td><td>ret2libc, ROP</td></tr>
+<tr><td>W^X</td><td>✅ Everywhere</td><td>❌ NO</td><td>ret2libc, ROP</td></tr>
+<tr><td>Stack canary</td><td>❌</td><td>✅ Detects corruption</td><td>Info leak (read canary first)</td></tr>
+<tr><td>ASLR</td><td>❌</td><td>❌ But hides addresses</td><td>Brute force (32-bit), memory leak</td></tr>
+</table>
+</div>
+
+<div class="flip-grid">
+<div class="flip-card" onclick="this.classList.toggle('flipped')"><div class="flip-inner"><div class="flip-front"><div class="q">ASLR — is it an OS setting or an application setting?</div><div class="hint">Mock Q1</div></div><div class="flip-back"><div class="a">It is an operating system setting. ASLR is applied system-wide by the OS, not by individual applications.</div></div></div></div>
+<div class="flip-card" onclick="this.classList.toggle('flipped')"><div class="flip-inner"><div class="flip-front"><div class="q">What does -fstack-protector-all do?</div><div class="hint">Not just vulnerable functions</div></div><div class="flip-back"><div class="a">Inserts stack canaries into ALL functions that have local buffers — not just those the compiler deems vulnerable.</div></div></div></div>
+<div class="flip-card" onclick="this.classList.toggle('flipped')"><div class="flip-inner"><div class="flip-front"><div class="q">On 64-bit systems, can W^X be disabled?</div><div class="hint">Slides are specific here</div></div><div class="flip-back"><div class="a">No. On 64-bit architectures, W^X are always enabled for every application and cannot be disabled.</td></div></div></div></div>
+<div class="flip-card" onclick="this.classList.toggle('flipped')"><div class="flip-inner"><div class="flip-front"><div class="q">Non-exec data segments protect against which vulnerability type?</div><div class="hint">Mock Q6</div></div><div class="flip-back"><div class="a">A stack-based buffer overflow with shellcode injection — prevents the shellcode on the stack from executing.</div></div></div></div>
+</div>
+</div>
+
+<!-- ═══════════════════════════ MEGA QUIZ ═══════════════════════════ -->
+<div id="sec-quiz" class="section">
+<h2 class="sec-title">🧠 Mega Quiz — Mock Exam Style</h2>
+<p class="sec-sub">All topics. Same style as the real exam. Shuffle on every retake.</p>
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+<span class="qscore" id="qscore">Score: 0 / 0</span>
+<button class="step-btn sec" onclick="qRestart()">Restart</button>
+</div>
+<div id="qContainer"></div>
+</div>
+
+</div><!-- end .main -->
+
+<script>
+/* ── TAB NAV ── */
+function show(id){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.getElementById('sec-'+id).classList.add('active');
+  document.querySelectorAll('.top-nav button').forEach((b,i)=>{
+    b.classList.toggle('active',['cia','integers','stack','bufover','unsafe','shellcode','fmtstr','heap','fuzzing','afl','protections','quiz'][i]===id);
+  });
+  window.scrollTo(0,0);
+}
+
+/* ── STACK DIAGRAM ── */
+const SCELLS=[
+  {label:'ESP → buf[0..7]',cls:'s-buf s-esp',title:'Buffer (local variable) — ESP',body:'The buffer starts here at the lowest address. Input data is written here. Any data written past buf[15] overflows upward toward the return address.'},
+  {label:'       buf[8..15]',cls:'s-buf',title:'Buffer continued',body:'The rest of the buffer. Once this is full, the next byte written begins corrupting the saved EBP.'},
+  {label:'EBP → saved old EBP',cls:'s-ebp',title:'Saved old EBP',body:'Pushed by "push ebp" in the prologue. Restored by "pop ebp" in the epilogue. Corrupting this damages the caller\'s stack frame navigation.'},
+  {label:'       return address ⚠️',cls:'s-ret',title:'Return address — THE TARGET',body:'Pushed by CALL. Popped into EIP by RET. Overwriting this with a chosen address gives the attacker control of EIP — the primary goal of a buffer overflow attack.'},
+  {label:'       param 1',cls:'s-param',title:'Function parameter 1 — [EBP+8]',body:'Arguments pushed by the caller before CALL. Sit at higher addresses. First arg at EBP+8, second at EBP+12.'},
+  {label:'       param 2',cls:'s-param',title:'Function parameter 2 — [EBP+12]',body:'Second function argument. Parameters are pushed right-to-left in cdecl convention.'},
+];
+const SADDRS=['0xbffff0e0','0xbffff0e8','0xbffff0f0','0xbffff0f4','0xbffff0f8','0xbffff0fc'];
+function buildStackDiag(){
+  const d=document.getElementById('stack-diag');if(!d)return;
+  d.innerHTML='<p style="font-size:10px;color:#4a5568;margin-bottom:5px;font-family:\'Courier New\'">LOW ↑ ADDRESS</p>';
+  SCELLS.forEach((c,i)=>{
+    const row=document.createElement('div');row.className='s-row';
+    const addr=document.createElement('span');addr.className='s-addr';addr.textContent=SADDRS[i];
+    const cell=document.createElement('div');cell.className='s-cell '+c.cls;cell.textContent=c.label;
+    cell.onclick=()=>{document.getElementById('stack-info').innerHTML='<strong style="color:#90cdf4">'+c.title+'</strong><br>'+c.body;};
+    row.appendChild(addr);row.appendChild(cell);d.appendChild(row);
+  });
+  d.innerHTML+='<p style="font-size:10px;color:#4a5568;margin-top:5px;font-family:\'Courier New\'">HIGH ↓ ADDRESS</p>';
+}
+buildStackDiag();
+
+/* ── PROLOGUE STEPPER ── */
+const PSTEPS=[
+  {code:['// Caller (before CALL):','push param2      ; push args right→left','push param1','call  myFunction  ; pushes return address → jumps'],hl:[3],
+   ex:'<strong>CALL instruction.</strong> The caller pushes arguments right-to-left, then executes CALL. CALL automatically pushes the <strong>return address</strong> (address of the next instruction in the caller) onto the stack, then jumps to the function.',
+   regs:{ESP:'moves down (return addr on top)',EBP:"still caller's EBP",EIP:'now = myFunction'}},
+  {code:['myFunction:','  push ebp       ← now: save caller\'s EBP','  mov  ebp, esp','  sub  esp, N'],hl:[1],
+   ex:'<strong>push ebp.</strong> Saves the <strong>caller\'s EBP</strong> onto the stack. This starts the frame pointer chain. ESP decrements by 4.',
+   regs:{ESP:'points to saved old EBP',EBP:"still caller's (unchanged yet)",EIP:'inside myFunction'}},
+  {code:['myFunction:','  push ebp       ✓','  mov  ebp, esp  ← now: set new base pointer','  sub  esp, N'],hl:[2],
+   ex:'<strong>mov ebp, esp.</strong> EBP is set to current ESP. EBP is now the <strong>stable anchor</strong> for this frame — it will not change. Locals at EBP−N, return address at EBP+4, args at EBP+8+.',
+   regs:{ESP:'same as EBP right now',EBP:'= ESP — new stable frame reference',EIP:'inside myFunction'}},
+  {code:['myFunction:','  push ebp       ✓','  mov  ebp, esp  ✓','  sub  esp, N    ← now: reserve local variable space'],hl:[3],
+   ex:'<strong>sub esp, N.</strong> ESP decrements by N bytes, carving out space for local variables. EBP stays fixed. The area between ESP and EBP is the local variable area.',
+   regs:{ESP:'moved down N bytes',EBP:'unchanged — stable frame reference',EIP:'inside myFunction'}},
+  {code:['// Accessing locals and args:','mov eax, [ebp - 4]   ; first local','mov eax, [ebp - 8]   ; second local','mov eax, [ebp + 4]   ; return address','mov eax, [ebp + 8]   ; first argument','mov eax, [ebp + 12]  ; second argument'],hl:[1,2,3,4,5],
+   ex:'<strong>Using the frame.</strong> Locals at negative EBP offsets (EBP−4, EBP−8...). Return address at EBP+4. Arguments at EBP+8, EBP+12... EBP stays fixed throughout.',
+   regs:{ESP:'top of local area',EBP:'stable — same as after step 3',EIP:'inside myFunction'}},
+  {code:['// Epilogue:','  mov  esp, ebp  ; or LEAVE — restore stack pointer','  pop  ebp       ; restore caller\'s EBP','  ret            ; pop return address → EIP'],hl:[1,2,3],
+   ex:'<strong>Epilogue & return.</strong> Reverses the prologue. <strong>mov esp, ebp</strong> discards locals. <strong>pop ebp</strong> restores caller\'s frame pointer. <strong>RET</strong> pops the return address into EIP — execution returns to the caller.',
+   regs:{ESP:"restored to caller's level",EBP:"restored to caller's EBP",EIP:'return address — back in caller'}},
+];
+let pIdx=0;
+function buildPrologue(){
+  const dots=document.getElementById('sp-dots');if(!dots)return;
+  dots.innerHTML=PSTEPS.map((_,i)=>`<div class="sdot" id="sdot-${i}"></div>`).join('');
+  renderPStep();
+}
+function renderPStep(){
+  const s=PSTEPS[pIdx],n=PSTEPS.length;
+  document.getElementById('sp-num').textContent=`Step ${pIdx+1} / ${n}`;
+  document.getElementById('sp-prev').disabled=pIdx===0;
+  document.getElementById('sp-next').disabled=pIdx===n-1;
+  document.querySelectorAll('.sdot').forEach((d,i)=>d.classList.toggle('done',i<=pIdx));
+  document.getElementById('sp-code').innerHTML=s.code.map((l,i)=>`<div class="code-line${s.hl.includes(i)?' hl':''}">${esc(l)}</div>`).join('');
+  document.getElementById('sp-explain').innerHTML=s.ex;
+  document.getElementById('sp-regs').innerHTML=Object.entries(s.regs).map(([k,v])=>`<div class="reg-pill"><span class="rn">${k}</span><span class="rv">${v}</span></div>`).join('');
+}
+function spStep(d){pIdx=Math.max(0,Math.min(PSTEPS.length-1,pIdx+d));renderPStep();}
+function spReset(){pIdx=0;renderPStep();}
+buildPrologue();
+
+/* ── OVERFLOW SIMULATOR ── */
+const SIMC=[
+  {label:'buf[0..3]',base:0,size:4,type:'buf'},
+  {label:'buf[4..7]',base:4,size:4,type:'buf'},
+  {label:'buf[8..11]',base:8,size:4,type:'buf'},
+  {label:'buf[12..15]',base:12,size:4,type:'buf'},
+  {label:'saved EBP',base:16,size:4,type:'ebp'},
+  {label:'return address',base:20,size:4,type:'ret'},
+  {label:'param 1',base:24,size:4,type:'param'},
+];
+function buildSim(){
+  const d=document.getElementById('sim-stack');if(!d)return;
+  d.innerHTML='<p style="font-size:10px;color:#4a5568;margin-bottom:5px;font-family:\'Courier New\'">LOW ↑ ADDRESS</p>';
+  SIMC.forEach((c,i)=>{
+    const row=document.createElement('div');row.className='s-row';
+    const addr=document.createElement('span');addr.className='s-addr';addr.textContent='0x…'+(100+c.base).toString(16).padStart(3,'0');
+    const cell=document.createElement('div');cell.className='s-cell s-param';cell.id='sc-'+i;cell.textContent=c.label;
+    row.appendChild(addr);row.appendChild(cell);d.appendChild(row);
+  });
+  d.innerHTML+='<p style="font-size:10px;color:#4a5568;margin-top:5px;font-family:\'Courier New\'">HIGH ↓ ADDRESS</p>';
+  simUpdate(0);
+}
+function simUpdate(v){
+  v=parseInt(v);
+  const sl=document.getElementById('sim-sl');if(sl)sl.value=v;
+  const ve=document.getElementById('sim-val');let vcls='safe',info='';
+  SIMC.forEach((c,i)=>{
+    const cell=document.getElementById('sc-'+i);if(!cell)return;
+    cell.className='s-cell';
+    if(v>=c.base+c.size){
+      if(c.type==='buf'){cell.classList.add('s-buf');cell.textContent=c.label+' ← written';}
+      else if(c.type==='ebp'){cell.classList.add('s-ebp');cell.textContent='saved EBP ← CORRUPTED ⚠️';vcls='warn';}
+      else if(c.type==='ret'){cell.classList.add('s-ret');cell.textContent='return address ← OVERWRITTEN ☠️';vcls='danger';}
+      else{cell.classList.add('s-ebp');cell.textContent=c.label+' ← corrupted';}
+    } else if(v>c.base){cell.classList.add(c.type==='buf'?'s-buf':'s-ebp');cell.textContent=c.label+' ← partially written';}
+    else{cell.classList.add(c.type==='buf'?'s-buf':'s-param');cell.textContent=c.label;}
+  });
+  ve.textContent=v+' bytes';ve.className='sim-val '+vcls;
+  if(v===0)info='Move the slider to start writing into the buffer.';
+  else if(v<=16)info='<strong style="color:#9ae6b4">Safe zone</strong> — writing within the 16-byte buffer. No adjacent data is corrupted.';
+  else if(v<=20)info='<strong style="color:#f6ad55">Buffer overflowed!</strong> Writing past buf[15] now corrupts the saved EBP. The caller\'s frame pointer is damaged — but EIP is not yet controlled.';
+  else if(v<=24)info='<strong style="color:#fc8181">Return address overwritten ☠️</strong> The value at EBP+4 has been replaced with attacker-controlled bytes. When RET executes, EIP is loaded with this value. The attacker now controls execution.';
+  else info='<strong style="color:#fc8181">Full control + beyond.</strong> The return address is overwritten and parameters in the caller\'s frame are being corrupted. In a real exploit this region contains the new return address pointing into the NOP sled.';
+  document.getElementById('sim-info').innerHTML=info;
+}
+buildSim();
+
+/* ── QUIZ ── */
+const QQS=[
+  {q:"What does the 'I' in the CIA triad stand for?",o:["Isolation","Implementation","Intrusion","Integrity"],a:3,e:"Integrity means data is trustworthy, authentic, accurate, and free from tampering."},
+  {q:"An unsigned char holds 0. What is the result of subtracting 1?",o:["−1","0","128","255"],a:3,e:"Underflow on unsigned char: 0−1 wraps to 255."},
+  {q:"An unsigned char holds 255. What is the result of adding 1?",o:["256","−1","128","0"],a:3,e:"Overflow: 255+1 = 256 which truncates to 0 in 8 bits."},
+  {q:"int x = INT_MAX; x = x + 1; Why does overflow occur?",o:["x is a local variable","x is used in printf","x is initially set to INT_MAX","x is incremented which causes the overflow"],a:3,e:"The act of incrementing x past INT_MAX causes the overflow. INT_MAX is just the setup — the increment is the cause."},
+  {q:"What is the correct order of the x86 function prologue?",o:["sub esp,N → push ebp → mov ebp,esp","mov ebp,esp → push ebp → sub esp,N","push ebp → sub esp,N → mov ebp,esp","push ebp → mov ebp,esp → sub esp,N"],a:3,e:"1) push ebp (save old base pointer). 2) mov ebp,esp (set new base pointer). 3) sub esp,N (reserve local variable space)."},
+  {q:"The return address is at which offset from EBP?",o:["EBP − 4","EBP − 8","EBP + 8","EBP + 4"],a:3,e:"EBP+0 = saved old EBP. EBP+4 = return address. EBP+8 = first argument."},
+  {q:"The first function argument is at which offset from EBP?",o:["EBP − 4","EBP + 4","EBP − 8","EBP + 8"],a:3,e:"EBP+4 is the return address; EBP+8 is the first argument."},
+  {q:"Does a non-executable stack stop the return address being overwritten?",o:["Yes, always","Yes, but only on 64-bit","Only with ASLR enabled","No — it does NOT stop overwriting of the return address"],a:3,e:"The slides explicitly state: 'REM: It doesn't stop over-writing of the return address.'"},
+  {q:"char string[10]; — how many characters can it hold?",o:["10","11","Unlimited","9 + the NULL byte"],a:3,e:"One byte is reserved for the null terminator, leaving 9 usable character positions."},
+  {q:"What does %n do in a format string?",o:["Prints a newline","Prints the remaining argument count","Moves to the next argument","Writes the number of bytes printed so far to the address of the argument"],a:3,e:"%n writes an integer to a memory address — enabling arbitrary memory writes if an attacker controls the format string."},
+  {q:"The following vulnerability: printf(user_input); is best described as:",o:["A stack buffer overflow","A heap overflow","A NOP sled attack","A format string vulnerability — user input is the format string"],a:3,e:"fgets limits the buffer correctly. The vulnerability is printf(user_input) using user data as the format string, enabling %x/%n injection."},
+  {q:"What is the safe replacement for gets()?",o:["scanf()","read()","getchar()","fgets() with a size limit"],a:3,e:"fgets(buf, sizeof(buf), stdin) limits input to prevent overflow."},
+  {q:"What does calloc() do differently from malloc()?",o:["calloc is faster","calloc returns a typed pointer","calloc allocates from the stack","calloc allocates and zero-initialises all bytes"],a:3,e:"calloc initialises all allocated bytes to zero. malloc leaves memory uninitialised."},
+  {q:"What is a memory leak?",o:["Data read from the wrong address","A buffer overflow on the heap","Reading freed memory","Heap memory allocated but never freed — available memory shrinks over time"],a:3,e:"If free() is never called, the memory is never returned. The slides call this a 'Memory Leak'."},
+  {q:"Is it possible to find ALL vulnerabilities with fuzzing?",o:["Yes, always","Depends on the tool","Depends on the binary","No — fuzzing is based on probability and may only find certain ones"],a:3,e:"Fuzzing cannot guarantee complete coverage. It is probabilistic."},
+  {q:"What mutation types are listed in the slides?",o:["Bitflip only","Bitflip and byteflip only","Bitflip, byteflip, arithmetic, insert/delete","Random and structured"],a:2,e:"The slides list four: bitflip, byteflip, arithmetic (add/subtract/multiply/divide on bytes), insert/delete."},
+  {q:"What does AFL use to guide which mutations to keep?",o:["Random selection","File size","Crash count","Code coverage feedback — inputs triggering new paths are kept as seeds"],a:3,e:"AFL's feedback-driven optimisation identifies inputs triggering unique behaviour and uses them as seeds for further mutation."},
+  {q:"Which of these is a limitation of AFL?",o:["It cannot detect any crashes","It requires a GPU","It only works with image files","Stdin/file input only — cannot natively fuzz network programs"],a:3,e:"All five AFL limitations: logs crashes only, stdin/file only, Linux only, needs source build, no native parallelisation."},
+  {q:"What is ASLR?",o:["A stack canary technique","A type of shellcode","A compiler flag for NX","Address Space Layout Randomisation — randomises where the stack, heap, and libraries load each run"],a:3,e:"ASLR randomises memory locations each run, making it hard to predict where shellcode or libc functions are."},
+  {q:"Is ASLR an OS setting or a per-application setting?",o:["Per-application only","Both equally","The application controls it if OS doesn't","It is an operating system setting"],a:3,e:"ASLR is an OS-level setting applied system-wide."},
+  {q:"What does W^X mean?",o:["Memory can be both written and executed","All memory is encrypted","XOR is applied to memory pages","Memory is either writable OR executable — never both"],a:3,e:"W^X enforces that no page is both writable and executable, preventing injection of executable payloads anywhere."},
+  {q:"What is a null canary?",o:["A canary that terminates the program","A canary with 0x000aff0d","A randomly generated value","A canary consisting of all zeros: 0x00000000"],a:3,e:"The slides: 'Null Canary: consists of all zeros (0x00000000).'"},
+  {q:"What does ret2libc do?",o:["Injects shellcode into libc","A heap exploitation technique","Reads memory using %x","Overwrites the return address to point to a libc function (e.g. system()) — bypassing NX"],a:3,e:"ret2libc takes control of a complete stack frame to call any libc function. libc is always loaded in executable memory."},
+  {q:"Why must shellcode typically avoid null bytes?",o:["They crash the CPU","They disable ASLR","They trigger the NX bit","String functions treat 0x00 as the string terminator and stop copying there"],a:3,e:"strcpy, gets, etc. stop at null bytes — any 0x00 in the shellcode truncates delivery."},
+  {q:"What does 'echo 0 | sudo tee /proc/sys/kernel/randomize_va_space' do?",o:["Enables ASLR","Enables W^X","Enables stack canaries","Disables ASLR — sets randomisation to 0"],a:3,e:"This command (shown in the slides) disables ASLR system-wide for the current session."},
+];
+let qQ=[],qI=0,qScore=0,qAns=false;
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function qRender(){
+  qAns=false;
+  if(qI>=qQ.length){document.getElementById('qContainer').innerHTML=`<div class="qblock"><p style="font-size:16px;font-weight:600;color:#9ae6b4;text-align:center">Quiz complete! Score: ${qScore} / ${qQ.length} (${Math.round(qScore/qQ.length*100)}%)</p><button class="qnext" style="display:block;margin:16px auto" onclick="qRestart()">Retake</button></div>`;return;}
+  const q=qQ[qI];
+  document.getElementById('qscore').textContent=`Score: ${qScore} / ${qI}`;
+  const opts=q.o.map((o,i)=>`<button class="qopt" onclick="qPick(${i})">${['a','b','c','d'][i]}. ${esc(o)}</button>`).join('');
+  document.getElementById('qContainer').innerHTML=`<div class="qblock"><div class="qtext">Q${qI+1}. ${esc(q.q)}</div><div class="qopts">${opts}</div><div class="qfb" id="qfb"></div><button class="qnext" id="qnxt" onclick="qNext()">Next question →</button></div>`;
+}
+function qPick(i){
+  if(qAns)return;qAns=true;
+  const q=qQ[qI];
+  document.querySelectorAll('.qopt').forEach(b=>b.disabled=true);
+  const ok=i===q.a;
+  document.querySelectorAll('.qopt')[i].classList.add(ok?'right':'wrong');
+  if(!ok)document.querySelectorAll('.qopt')[q.a].classList.add('show');
+  const fb=document.getElementById('qfb');
+  fb.innerHTML='<strong>'+(ok?'✓ Correct':'✗ Incorrect')+'</strong> — '+esc(q.e);
+  fb.className='qfb show '+(ok?'ok':'bad');
+  if(ok)qScore++;
+  qI++;
+  document.getElementById('qscore').textContent=`Score: ${qScore} / ${qI}`;
+  document.getElementById('qnxt').style.display='inline-block';
+  document.getElementById('qnxt').textContent=qI<qQ.length?'Next question →':'See results →';
+}
+function qNext(){qRender();}
+function qRestart(){qQ=shuffle([...QQS]);qI=0;qScore=0;qAns=false;qRender();}
+qQ=shuffle([...QQS]);qRender();
+</script>
+</body>
+</html>

@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IT & Internetworking Security — Quiz</title>
+<style>
+  :root {
+    --bg: #0f1117; --surface: #1a1d27; --surface2: #22263a; --border: #2e3350;
+    --accent: #4f8ef7; --accent2: #7c5cfc; --green: #22c55e; --red: #ef4444;
+    --yellow: #f59e0b; --text: #e8eaf6; --muted: #8b90b0; --radius: 14px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; min-height: 100vh; }
+
+  .header { background: linear-gradient(135deg,#1a1d27 0%,#0f1117 100%); border-bottom: 1px solid var(--border); padding: 18px 32px; display: flex; align-items: center; gap: 14px; }
+  .header-icon { width:40px;height:40px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0; }
+  .header h1 { font-size:1.25rem;font-weight:700; }
+  .header p { font-size:0.82rem;color:var(--muted);margin-top:2px; }
+  .back-btn { margin-left:auto;background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:8px 16px;border-radius:8px;cursor:pointer;font-size:0.85rem;display:none; }
+  .back-btn:hover { background:var(--border); }
+
+  .screen { display:none;padding:32px;max-width:900px;margin:0 auto; }
+  .screen.active { display:block; }
+
+  .home-title { text-align:center;margin-bottom:32px; }
+  .home-title h2 { font-size:1.7rem;font-weight:800;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text; }
+  .home-title p { color:var(--muted);margin-top:8px;font-size:0.95rem; }
+
+  .mega-card { background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:var(--radius);padding:24px 28px;cursor:pointer;margin-bottom:28px;display:flex;align-items:center;gap:18px;transition:transform .15s,box-shadow .15s;box-shadow:0 4px 20px rgba(79,142,247,0.3); }
+  .mega-card:hover { transform:translateY(-2px);box-shadow:0 8px 30px rgba(79,142,247,0.45); }
+  .mega-card .mc-icon { font-size:2.2rem; }
+  .mega-card h3 { font-size:1.2rem;font-weight:800;color:#fff; }
+  .mega-card p { font-size:0.85rem;color:rgba(255,255,255,0.75);margin-top:4px; }
+  .mega-card .mc-badge { margin-left:auto;background:rgba(255,255,255,0.2);padding:6px 14px;border-radius:20px;font-size:0.8rem;font-weight:700;color:#fff;white-space:nowrap; }
+
+  .topics-label { font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:14px; }
+  .topic-grid { display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px; }
+  .topic-card { background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;cursor:pointer;transition:border-color .15s,transform .15s,background .15s; }
+  .topic-card:hover { border-color:var(--accent);background:var(--surface2);transform:translateY(-2px); }
+  .topic-card .tc-icon { font-size:1.6rem;margin-bottom:10px; }
+  .topic-card .tc-week { font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:4px; }
+  .topic-card h3 { font-size:0.98rem;font-weight:700;line-height:1.3; }
+  .topic-card p { font-size:0.8rem;color:var(--muted);margin-top:6px; }
+  .tc-footer { display:flex;align-items:center;justify-content:space-between;margin-top:14px; }
+  .q-count { background:var(--surface2);border:1px solid var(--border);padding:3px 10px;border-radius:20px;font-size:0.75rem;color:var(--muted); }
+  .tc-arrow { color:var(--accent);font-size:1.1rem; }
+
+  .quiz-header { display:flex;align-items:center;gap:12px;margin-bottom:24px; }
+  .quiz-icon { font-size:1.5rem; }
+  .quiz-title { font-size:1.1rem;font-weight:700; }
+  .quiz-subtitle { font-size:0.8rem;color:var(--muted); }
+  .progress-wrap { margin-bottom:28px; }
+  .progress-info { display:flex;justify-content:space-between;font-size:0.82rem;color:var(--muted);margin-bottom:8px; }
+  .progress-bar { height:6px;background:var(--surface2);border-radius:99px;overflow:hidden; }
+  .progress-fill { height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:99px;transition:width .4s ease; }
+
+  .question-card { background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:28px;margin-bottom:18px; }
+  .q-number { font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:var(--muted);margin-bottom:12px; }
+  .q-text { font-size:1.05rem;line-height:1.6;font-weight:500; }
+  .q-type-badge { display:inline-block;background:rgba(124,92,252,0.15);border:1px solid rgba(124,92,252,0.3);color:#a78bfa;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;padding:3px 8px;border-radius:6px;margin-bottom:10px; }
+
+  /* MCQ options */
+  .options { display:flex;flex-direction:column;gap:10px; }
+  .option-btn { background:var(--surface2);border:1.5px solid var(--border);color:var(--text);padding:14px 18px;border-radius:10px;cursor:pointer;text-align:left;font-size:0.92rem;line-height:1.45;transition:border-color .12s,background .12s;display:flex;align-items:flex-start;gap:12px; }
+  .option-btn:not(.answered):hover { border-color:var(--accent);background:var(--surface); }
+  .option-btn .opt-label { font-weight:700;font-size:0.85rem;color:var(--muted);flex-shrink:0;min-width:20px; }
+  .option-btn.correct { border-color:var(--green);background:rgba(34,197,94,0.1); }
+  .option-btn.correct .opt-label { color:var(--green); }
+  .option-btn.wrong { border-color:var(--red);background:rgba(239,68,68,0.1); }
+  .option-btn.wrong .opt-label { color:var(--red); }
+  .option-btn.disabled { cursor:default; }
+  .option-btn.show-correct { border-color:var(--green);background:rgba(34,197,94,0.07); }
+
+  /* ORDER question UI */
+  .order-zone { display:none; }
+  .order-instructions { font-size:0.82rem;color:var(--muted);margin-bottom:14px;padding:10px 14px;background:rgba(124,92,252,0.08);border:1px solid rgba(124,92,252,0.2);border-radius:8px; }
+  .order-col-label { font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:8px; }
+  .order-chips { display:flex;flex-wrap:wrap;gap:8px;min-height:44px;padding:12px;background:var(--surface2);border:1.5px dashed var(--border);border-radius:10px;margin-bottom:16px; }
+  .order-chip { background:var(--surface);border:1.5px solid var(--border);color:var(--text);padding:9px 15px;border-radius:8px;cursor:pointer;font-size:0.86rem;line-height:1.3;transition:border-color .12s,background .12s,opacity .12s; }
+  .order-chip:hover { border-color:var(--accent);background:var(--surface2); }
+  .order-chip.used { opacity:0.28;cursor:default;pointer-events:none; }
+  .order-sequence { display:flex;flex-direction:column;gap:8px;min-height:44px;margin-bottom:16px; }
+  .seq-item { display:flex;align-items:center;gap:12px;background:var(--surface2);border:1.5px solid var(--accent);padding:11px 16px;border-radius:9px;cursor:pointer;font-size:0.88rem;transition:border-color .12s; }
+  .seq-item:hover { border-color:var(--red); }
+  .seq-num { background:var(--accent);color:#fff;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.75rem;flex-shrink:0; }
+  .seq-item.seq-correct { border-color:var(--green);background:rgba(34,197,94,0.09);cursor:default; }
+  .seq-item.seq-correct .seq-num { background:var(--green); }
+  .seq-item.seq-wrong { border-color:var(--red);background:rgba(239,68,68,0.09);cursor:default; }
+  .seq-item.seq-wrong .seq-num { background:var(--red); }
+  .seq-item.disabled { cursor:default; }
+  .correct-order-box { background:rgba(34,197,94,0.07);border:1px solid rgba(34,197,94,0.25);border-radius:9px;padding:12px 16px;margin-top:10px;font-size:0.83rem;color:#86efac; }
+  .correct-order-box strong { display:block;margin-bottom:6px;color:var(--green); }
+  .check-order-btn { width:100%;background:linear-gradient(135deg,var(--accent2),var(--accent));color:#fff;border:none;padding:13px;border-radius:10px;font-size:0.92rem;font-weight:700;cursor:pointer;margin-top:4px;display:none;transition:opacity .15s; }
+  .check-order-btn:hover { opacity:0.88; }
+
+  .feedback-box { border-radius:10px;padding:16px 18px;margin-top:16px;font-size:0.88rem;line-height:1.6;border:1px solid;display:none; }
+  .feedback-box.correct { background:rgba(34,197,94,0.08);border-color:rgba(34,197,94,0.3); }
+  .feedback-box.wrong { background:rgba(239,68,68,0.08);border-color:rgba(239,68,68,0.3); }
+  .feedback-title { font-weight:700;font-size:0.9rem;margin-bottom:6px; }
+  .feedback-box.correct .feedback-title { color:var(--green); }
+  .feedback-box.wrong .feedback-title { color:var(--red); }
+  .trap-note { margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,0.08);color:var(--yellow);font-size:0.83rem; }
+  .trap-note span { font-weight:700; }
+
+  .next-btn { width:100%;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border:none;padding:14px;border-radius:10px;font-size:0.95rem;font-weight:700;cursor:pointer;margin-top:8px;display:none;transition:opacity .15s; }
+  .next-btn:hover { opacity:0.9; }
+
+  /* Results */
+  .results-screen { text-align:center; }
+  .result-circle { width:130px;height:130px;border-radius:50%;margin:0 auto 24px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:2rem;font-weight:800;border:5px solid; }
+  .result-circle.excellent { border-color:var(--green);color:var(--green);background:rgba(34,197,94,0.1); }
+  .result-circle.good { border-color:var(--accent);color:var(--accent);background:rgba(79,142,247,0.1); }
+  .result-circle.needs-work { border-color:var(--yellow);color:var(--yellow);background:rgba(245,158,11,0.1); }
+  .result-circle.poor { border-color:var(--red);color:var(--red);background:rgba(239,68,68,0.1); }
+  .result-circle .pct-label { font-size:0.7rem;font-weight:600;color:var(--muted); }
+  .result-title { font-size:1.5rem;font-weight:800;margin-bottom:8px; }
+  .result-sub { color:var(--muted);font-size:0.95rem;margin-bottom:32px; }
+  .result-stats { display:flex;justify-content:center;gap:20px;margin-bottom:32px;flex-wrap:wrap; }
+  .stat-chip { background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 20px;text-align:center;min-width:90px; }
+  .stat-chip .sc-val { font-size:1.4rem;font-weight:800; }
+  .stat-chip .sc-label { font-size:0.75rem;color:var(--muted);margin-top:2px; }
+  .stat-chip.green .sc-val { color:var(--green); }
+  .stat-chip.red .sc-val { color:var(--red); }
+  .result-actions { display:flex;gap:12px;justify-content:center;flex-wrap:wrap; }
+  .btn-secondary { background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:12px 24px;border-radius:10px;cursor:pointer;font-size:0.9rem;font-weight:600;transition:background .15s; }
+  .btn-secondary:hover { background:var(--border); }
+  .btn-primary { background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border:none;padding:12px 24px;border-radius:10px;cursor:pointer;font-size:0.9rem;font-weight:700;transition:opacity .15s; }
+  .btn-primary:hover { opacity:0.9; }
+  .review-list { text-align:left;margin-top:32px; }
+  .review-item { background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:10px; }
+  .review-item.ri-correct { border-left:3px solid var(--green); }
+  .review-item.ri-wrong { border-left:3px solid var(--red); }
+  .ri-q { font-size:0.88rem;font-weight:600;margin-bottom:8px;line-height:1.4; }
+  .ri-ans { font-size:0.82rem;color:var(--muted); }
+  .ri-ans .correct-ans { color:var(--green);font-weight:600; }
+  .ri-ans .wrong-ans { color:var(--red);text-decoration:line-through;margin-right:6px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-icon">🔐</div>
+  <div>
+    <h1>IT &amp; Internetworking Security</h1>
+    <p>Interactive Exam Quiz — UP2107873</p>
+  </div>
+  <button class="back-btn" id="backBtn" onclick="goHome()">← Home</button>
+</div>
+
+<!-- HOME -->
+<div class="screen active" id="homeScreen">
+  <div class="home-title">
+    <h2>Choose Your Quiz</h2>
+    <p>Select a topic quiz, or take the Mega Quiz to test everything at once.</p>
+  </div>
+  <div class="mega-card" onclick="startQuiz('mega')">
+    <div class="mc-icon">⚡</div>
+    <div>
+      <h3>Mega Quiz — All Topics</h3>
+      <p>All questions randomised across every topic including ordering challenges.</p>
+    </div>
+    <div class="mc-badge" id="megaBadge">— Questions</div>
+  </div>
+  <div class="topics-label">Topic Quizzes</div>
+  <div class="topic-grid" id="topicGrid"></div>
+</div>
+
+<!-- QUIZ -->
+<div class="screen" id="quizScreen">
+  <div class="quiz-header">
+    <div class="quiz-icon" id="quizIcon"></div>
+    <div>
+      <div class="quiz-title" id="quizTitle"></div>
+      <div class="quiz-subtitle" id="quizSubtitle"></div>
+    </div>
+  </div>
+  <div class="progress-wrap">
+    <div class="progress-info">
+      <span id="progressText">Question 1 of 10</span>
+      <span id="scoreText">Score: 0</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+  </div>
+  <div class="question-card">
+    <div class="q-number" id="qNumber"></div>
+    <div id="qTypeBadge"></div>
+    <div class="q-text" id="qText"></div>
+  </div>
+
+  <!-- MCQ options -->
+  <div class="options" id="optionsContainer"></div>
+
+  <!-- ORDER question UI -->
+  <div class="order-zone" id="orderZone">
+    <div class="order-instructions">👆 Click items in the <strong>correct order</strong> (top = first). Click a placed item to remove it.</div>
+    <div class="order-col-label">Available items</div>
+    <div class="order-chips" id="orderChips"></div>
+    <div class="order-col-label">Your sequence</div>
+    <div class="order-sequence" id="orderSequence"></div>
+    <button class="check-order-btn" id="checkOrderBtn" onclick="checkOrder()">Check My Order ✓</button>
+    <div class="correct-order-box" id="correctOrderBox" style="display:none"></div>
+  </div>
+
+  <div class="feedback-box" id="feedbackBox">
+    <div class="feedback-title" id="feedbackTitle"></div>
+    <div id="feedbackExplanation"></div>
+    <div class="trap-note" id="trapNote" style="display:none"><span>⚠ Exam Trap: </span><span id="trapText"></span></div>
+  </div>
+  <button class="next-btn" id="nextBtn" onclick="nextQuestion()">Next Question →</button>
+</div>
+
+<!-- RESULTS -->
+<div class="screen" id="resultsScreen">
+  <div class="results-screen">
+    <div class="result-circle" id="resultCircle">
+      <div id="resultPct"></div>
+      <div class="pct-label">Score</div>
+    </div>
+    <div class="result-title" id="resultTitle"></div>
+    <div class="result-sub" id="resultSub"></div>
+    <div class="result-stats">
+      <div class="stat-chip green"><div class="sc-val" id="statCorrect">0</div><div class="sc-label">Correct</div></div>
+      <div class="stat-chip red"><div class="sc-val" id="statWrong">0</div><div class="sc-label">Wrong</div></div>
+      <div class="stat-chip"><div class="sc-val" id="statTotal">0</div><div class="sc-label">Total</div></div>
+    </div>
+    <div class="result-actions">
+      <button class="btn-secondary" onclick="retryQuiz()">🔁 Retry Quiz</button>
+      <button class="btn-primary" onclick="goHome()">🏠 Home</button>
+    </div>
+    <div class="review-list" id="reviewList"></div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════
+//  QUESTION BANK
+//  type: 'mcq'   — standard multiple choice
+//  type: 'order' — put items[] in correct order
+// ═══════════════════════════════════════════════════
+const topics = [
+{
+  id:'w2', icon:'🛡️', week:'Week 2', name:'CIA, Risk & Evaluation',
+  desc:'CIA Triad, SLE/ALE formulas, Trust vs Assurance, TCSEC, intruder types',
+  color:'#4f8ef7',
+  questions:[
+    { q:"Which component of the CIA Triad is PRIMARILY targeted by a Denial of Service (DoS) attack?",
+      options:["Confidentiality","Integrity","Availability","Non-repudiation"], answer:2,
+      explanation:"DoS attacks overwhelm systems to make them inaccessible — Availability. Confidentiality (hiding data) and Integrity (data accuracy) are unaffected by a traffic flood.",
+      trap:"Many pick Confidentiality — DoS does not hide data, it removes access." },
+    { q:"A server has AV=£50,000, EF=0.4, ARO=2. What is the ALE?",
+      options:["£20,000","£40,000","£100,000","£4,000"], answer:1,
+      explanation:"SLE = £50,000 × 0.4 = £20,000. ALE = SLE × ARO = £20,000 × 2 = £40,000. Option A is the SLE — a deliberate trap.",
+      trap:"Option A (£20,000) is the SLE, not the ALE. Always multiply by ARO for the annual figure." },
+    { q:"What is the key difference between Trust and Assurance?",
+      options:["Trust is measured objectively; Assurance is based on belief","Assurance is measured objectively; Trust is based on subjective belief","They are interchangeable","Assurance = encryption strength; Trust = permissions"], answer:1,
+      explanation:"Trust is subjective (belief/feeling). Assurance is objective and measurable — backed by evidence, testing, and formal evaluation (TCSEC, Common Criteria).",
+      trap:"Option A reverses the definitions — a classic exam trick." },
+    { q:"Which TCSEC level is the MINIMUM requiring audit trails and individual user accountability?",
+      options:["C1","C2","B1","A1"], answer:1,
+      explanation:"C2 (Controlled Access Protection) is the first TCSEC level requiring per-user accountability via audit logs. C1 only requires basic DAC.",
+      trap:"C1 sounds sufficient but it has NO per-user audit requirement. C2 is first." },
+    { q:"A pen tester is hired with full knowledge of the network architecture. Which attacker type is this?",
+      options:["Black hat","White hat","Gray hat","Script kiddie"], answer:1,
+      explanation:"White hat = authorised ethical hacker. Gray hats act without permission first then report — legally ambiguous.",
+      trap:"Gray hat is the common wrong answer — they act WITHOUT prior permission." },
+    { q:"An admin left default credentials unchanged and the system was compromised. Which vulnerability category is this?",
+      options:["Technology weakness","Configuration weakness","Security policy weakness","Physical weakness"], answer:1,
+      explanation:"Configuration weakness = security issue from how a system is set up. Leaving default credentials is a configuration problem, not a flaw in the technology design itself.",
+      trap:"Technology weakness means a flaw in the protocol/design, not an admin error." },
+    { q:"What does EF=0.25 mean in quantitative risk analysis?",
+      options:["The threat occurs 25 times per year","25% of the asset value is lost per incident","The asset has a 25% probability of attack","Severity rank of 25th"], answer:1,
+      explanation:"EF (Exposure Factor) is the proportion of asset value destroyed per incident. 0.25 = 25% loss per event. ARO represents frequency.",
+      trap:"Students confuse EF (proportion of loss per event) with ARO (how often it occurs per year)." },
+    { q:"Which Stallings intruder type bypasses access controls AND suppresses audit logs?",
+      options:["Masquerader — external, forges credentials","Misfeasor — insider abusing access","Clandestine user — bypasses controls + suppresses audit","Script kiddie — uses pre-built tools"], answer:2,
+      explanation:"Clandestine = bypasses access controls AND suppresses the audit trail. Masquerader = external. Misfeasor = insider abuse. Audit suppression is the specific differentiator.",
+      trap:"Masquerader and Clandestine look similar — 'suppresses audit logs' is the Clandestine giveaway." },
+    { q:"Which formal evaluation standard is the current international standard replacing TCSEC and ITSEC?",
+      options:["TCSEC Orange Book","ITSEC E6","Common Criteria (ISO 15408)","FIPS 140-2"], answer:2,
+      explanation:"Common Criteria (ISO 15408) uses EAL1–EAL7 and Protection Profiles. TCSEC = US-only deprecated. ITSEC = European deprecated. FIPS 140-2 = cryptographic modules only.",
+      trap:"FIPS 140-2 is specifically for cryptographic module evaluation, not general system security." },
+    { q:"Which pillar ensures a sender cannot deny sending a message?",
+      options:["Confidentiality","Integrity","Availability","Non-repudiation"], answer:3,
+      explanation:"Non-repudiation (the 4th pillar) uses digital signatures to prove origin, preventing denial. Integrity ensures data was not modified but does not prove who sent it.",
+      trap:"Integrity ≠ Non-repudiation. Hashing proves the data wasn't changed, not who sent it." },
+    { q:"A company assigns risk labels: Low, Medium, High. What is the KEY limitation of this approach?",
+      options:["It is too slow","It cannot produce financial (ROI) figures for control decisions","It requires cryptographic tools","It only applies to physical threats"], answer:1,
+      explanation:"Qualitative risk is subjective labels — it cannot produce £ values. Quantitative (SLE/ALE) is needed to justify financial spend on security controls.",
+      trap:"Qualitative is faster/simpler, but its core limitation is no monetary output." },
+    { q:"AV=£200,000, EF=0.5, ARO=0.25. What is the ALE?",
+      options:["£100,000","£25,000","£50,000","£200,000"], answer:1,
+      explanation:"SLE = £200,000 × 0.5 = £100,000. ALE = £100,000 × 0.25 = £25,000. ARO of 0.25 means once every 4 years.",
+      trap:"ARO=0.25 means once every 4 years — NOT 25 times per year." },
+    { q:"Bell-LaPadula: 'no read up, no write down.' What does this model protect?",
+      options:["Integrity","Confidentiality","Availability","Non-repudiation"], answer:1,
+      explanation:"Bell-LaPadula is a CONFIDENTIALITY model. 'No read up' = can't read higher classified data. 'No write down' = can't copy secret data to lower classification. Compare Biba (integrity = no read down, no write up).",
+      trap:"Biba is the integrity model (inverse rules). Bell-LaPadula = confidentiality only." },
+    { q:"In DAC (Discretionary Access Control), who controls access permissions?",
+      options:["The system/OS security policy","The resource owner","The security administrator","The government regulation"], answer:1,
+      explanation:"DAC = the owner of the resource decides who can access it. MAC (Mandatory Access Control) = the system enforces labels/classifications regardless of owner wishes.",
+      trap:"MAC takes control away from the owner. DAC leaves it with the owner." },
+    { q:"Which of the following is NOT one of the 4 threat consequences defined in CCNASEC Ch3?",
+      options:["Disclosure","Deception","Detection","Usurpation"], answer:2,
+      explanation:"The 4 threat consequences are: Disclosure, Deception, Disruption, Usurpation. 'Detection' is not one of them — it is a defence mechanism, not a threat consequence.",
+      trap:"Detection sounds security-related but it is a countermeasure, not a threat consequence." },
+    // ORDER
+    { type:'order', q:"Put the TCSEC security levels in order from LOWEST to HIGHEST assurance:",
+      items:["D — Minimal protection","C1 — Discretionary Security","C2 — Controlled Access (first audit level)","B1 — Labelled Security","B2 — Structured Protection","B3 — Security Domains","A1 — Verified Design (highest)"],
+      explanation:"TCSEC levels ascend: D (no security) → C1 (basic DAC) → C2 (adds audit/accountability) → B1 (MAC labels) → B2 (structured, trusted path) → B3 (full reference monitor) → A1 (formally verified). C2 is the first level requiring audit.",
+      trap:"Ratings go D, C1, C2, B1, B2, B3, A1 — NOT alphabetical grades. Higher level = more rigorous evaluation." },
+    { q:"A 'Trusted System' must satisfy three specific requirements. Which of the following is NOT one of them?",
+      options:["Complete Mediation — every access request is checked by the reference monitor","Isolation — the protection mechanism itself is tamper-proof","Verifiability — the mechanism can be formally proven correct","Encryption — all stored data must be encrypted at rest"], answer:3,
+      explanation:"A Trusted System requires three things: Complete Mediation (all access goes through the reference monitor), Isolation (the reference monitor is protected from tampering), and Verifiability (it can be formally proven correct). Encryption is an important control but is NOT one of the three defining requirements of a Trusted System.",
+      trap:"Encryption is widely used but the three Trusted System requirements are specifically: Complete Mediation, Isolation, and Verifiability." },
+    { q:"A company purchases cyber insurance to cover financial losses from a data breach. Which risk management strategy is this?",
+      options:["Accept — acknowledge the risk and take no additional action","Mitigate — implement controls to reduce likelihood or impact","Transfer — shift financial consequences to another party","Avoid — eliminate the activity that generates the risk"], answer:2,
+      explanation:"Risk Transfer moves the financial consequence to a third party such as an insurer. Mitigation implements controls to reduce likelihood or impact. Acceptance acknowledges the risk without further action. Insurance does not reduce the probability of the breach — it only covers the financial aftermath.",
+      trap:"Insurance does NOT reduce or prevent the breach — it only transfers the financial consequence. This is Transfer, not Mitigation." }
+  ]
+},
+{
+  id:'w3', icon:'🦠', week:'Week 3', name:'Malware & Network Attacks',
+  desc:'Virus vs Worm, Trojan, Logic Bomb, ARP/SYN/DoS attacks, reconnaissance',
+  color:'#ef4444',
+  questions:[
+    { q:"Which malware does NOT require a host program and spreads autonomously across networks?",
+      options:["Virus","Worm","Trojan","Logic Bomb"], answer:1,
+      explanation:"Worm = self-replicating, no host file needed. Virus = requires host attachment. Trojan = no replication. Logic Bomb = condition-triggered.",
+      trap:"Both Virus and Worm replicate — ONLY Worms are independent of a host file." },
+    { q:"An attacker sends fake ARP replies to redirect traffic through their machine. What attack is this?",
+      options:["IP spoofing","ARP spoofing / ARP poisoning","MAC flooding","DHCP starvation"], answer:1,
+      explanation:"ARP spoofing poisons the ARP cache with fake MAC-to-IP mappings, enabling man-in-the-middle. IP spoofing is Layer 3 (forges IP headers), not Layer 2 ARP.",
+      trap:"IP spoofing = L3. ARP spoofing = L2. Different layers, completely different mechanisms." },
+    { q:"Malware lies dormant then deletes all files when the date reaches January 1st. What type is this?",
+      options:["Worm","Virus","Logic Bomb","Ransomware"], answer:2,
+      explanation:"Logic Bomb = executes when a specific condition is met (here: a date). Lies dormant until triggered. Ransomware encrypts files; Viruses spread via hosts.",
+      trap:"Logic Bomb is often confused with Virus (needs host). The TRIGGER condition is the key." },
+    { q:"Which of the following is a PASSIVE network reconnaissance technique?",
+      options:["Sending SYN packets to discover open ports","Attempting login with default credentials","Capturing and analysing network traffic with a packet sniffer","Sending ICMP echo requests to discover active hosts"], answer:2,
+      explanation:"Packet sniffing is passive — captures traffic without sending any packets. SYN scanning, login attempts, and ICMP pings all send packets (active).",
+      trap:"ICMP pings are sometimes called 'passive recon' in casual language, but they send packets — they're active." },
+    { q:"Which BEST describes a Trojan horse?",
+      options:["Self-replicates without a host","Appears legitimate but contains hidden malicious functionality","Triggers on a specific condition","Encrypts files for ransom"], answer:1,
+      explanation:"Trojan = appears legitimate software but hides malicious functionality (backdoor, keylogger, data exfiltration). Does NOT self-replicate.",
+      trap:"Ransomware encrypts files and could be a Trojan variant — but 'appears legitimate' is the Trojan definition." },
+    { q:"At which OSI layer does ARP operate, making ARP spoofing a Layer __ attack?",
+      options:["Layer 1 — Physical","Layer 2 — Data Link","Layer 3 — Network","Layer 4 — Transport"], answer:1,
+      explanation:"ARP maps Layer 3 IP addresses to Layer 2 MAC addresses. The protocol operates at Layer 2. ARP spoofing sends fake L2 MAC-to-IP mappings.",
+      trap:"Students say Layer 3 because ARP involves IP addresses — but the protocol itself is Layer 2." },
+    { q:"An attacker floods a server with half-open TCP connections, never completing the handshake. Which attack?",
+      options:["Ping of death","SYN flood","Smurf attack","ARP poisoning"], answer:1,
+      explanation:"SYN flood sends SYN packets without completing the 3-way handshake. Server allocates resources for each half-open connection until the table is exhausted (DoS → Availability).",
+      trap:"Ping of death = oversized ICMP. Smurf = broadcast amplification. Neither creates half-open TCP connections." },
+    { q:"DHCP starvation floods the DHCP server with fake MAC requests. Which attack category is this?",
+      options:["Reconnaissance","Access attack","Availability attack (DoS)","Privilege escalation"], answer:2,
+      explanation:"DHCP starvation exhausts the IP pool so legitimate clients cannot get addresses — denying service. It is a Layer 2 DoS attack.",
+      trap:"Access attacks gain unauthorised access. DHCP starvation denies service — a different goal." },
+    { q:"A program checks in daily with a C2 server and executes received commands. What malware type?",
+      options:["Logic bomb","Worm","Remote Access Trojan (RAT) / Botnet agent","Adware"], answer:2,
+      explanation:"RAT/botnet agent maintains a C2 connection for remote command execution. It is a Trojan variant — no self-replication like a worm.",
+      trap:"It sounds network-active like a worm, but no self-replication means it is NOT a worm. C2 = RAT." },
+    { q:"In the NETSEC 4-category attack framework, which involves exploiting vulnerabilities to gain unauthorised access?",
+      options:["Reconnaissance","Password attacks","Access attacks","Availability attacks"], answer:2,
+      explanation:"Access attacks exploit vulnerabilities (buffer overflow, IP spoofing, MITM) for unauthorised access. Reconnaissance = info gathering. Password = targeting auth. Availability = DoS.",
+      trap:"Reconnaissance comes before access attacks in the kill chain — they are separate phases." },
+    { q:"Which malware type HIDES other malware by modifying the OS kernel?",
+      options:["Trojan","Adware","Rootkit","Bacterium"], answer:2,
+      explanation:"Rootkit modifies the OS kernel or boot process to hide malicious processes from antivirus and system tools. Installed during the 'Elevate' stage of intrusion.",
+      trap:"A Trojan opens a backdoor but does not specifically hide processes at the kernel level." },
+    { q:"SYN cookies are a defence against which attack?",
+      options:["ARP spoofing","SYN flood","DHCP starvation","DNS cache poisoning"], answer:1,
+      explanation:"SYN cookies allow the server to avoid storing half-open connection state. When a SYN arrives, the server encodes state into the SYN-ACK sequence number, only allocating resources upon ACK receipt.",
+      trap:"SYN cookies defend specifically against SYN floods by eliminating the half-open connection table problem." },
+    { q:"A user reports: homepage keeps changing, unknown toolbars appeared, antivirus disabled, security warnings appear. Most likely?",
+      options:["Ransomware","Rootkit","Spyware","Logic bomb"], answer:2,
+      explanation:"Classic spyware indicators from the lecture: idle ads, homepage changes, toolbars, slow startup, security SW disabled. Spyware monitors the user and alters browser behaviour.",
+      trap:"Ransomware encrypts files and demands payment — there would be a clear ransom message, not subtle browser changes." },
+    { q:"What is the key difference between a DoS and a DDoS attack?",
+      options:["DoS uses UDP; DDoS uses TCP","DDoS uses multiple distributed sources (botnet); DoS uses a single source","DoS targets Confidentiality; DDoS targets Availability","DDoS is always louder but easier to block"], answer:1,
+      explanation:"DDoS = Distributed DoS — many compromised machines (botnet) flood the target simultaneously. Much harder to block because traffic comes from many source IPs. DoS = single source, easier to filter.",
+      trap:"Both DoS and DDoS target Availability. The distributed nature is what distinguishes DDoS." },
+    // ORDER questions
+    { type:'order', q:"Put the 5-Stage Intrusion Model in the correct order (first stage at top):",
+      items:["1. Reconnaissance — passive/active info gathering","2. Access — exploit vulnerability to gain entry","3. Elevate — escalate to root/admin privileges","4. Root Kit — install to hide presence, add backdoor","5. Utilise — use for botnet, ID theft, data exfil"],
+      explanation:"The lecture model: Reconnaissance → Access → Elevate → Root Kit → Utilise. After elevating privileges the attacker installs a rootkit to hide their presence before using the system for malicious purposes.",
+      trap:"'Utilise' is last, not 'Root Kit'. The rootkit is installed to enable long-term hidden presence before utilisation." },
+    { type:'order', q:"Put the TCP 3-way handshake in the correct order:",
+      items:["Client sends SYN (synchronise) to server","Server replies with SYN-ACK","Client sends ACK — connection established"],
+      explanation:"TCP 3-way handshake: SYN → SYN-ACK → ACK. A SYN flood attacks this by sending many SYNs and never completing the third step (ACK), exhausting the server's connection table.",
+      trap:"SYN flood stops after step 1 — the ACK is never sent, leaving half-open connections." },
+    { q:"Which malware type ONLY replicates itself to exhaust system resources, carrying no other payload?",
+      options:["Virus — attaches to host files and replicates","Worm — self-replicates autonomously across networks","Bacterium (Rabbit) — replicates solely to exhaust CPU, memory, or disk","Trojan — appears legitimate but hides malicious functions"], answer:2,
+      explanation:"A Bacterium (also known as Rabbit) has one purpose: rapid self-replication to consume all available resources (CPU, memory, disk space) until the system crashes. Unlike worms, it carries no secondary payload such as a backdoor or data exfiltration routine.",
+      trap:"Worms also replicate but typically carry a payload. The Bacterium/Rabbit is defined by resource exhaustion being its SOLE purpose." },
+    { q:"An attacker sends spoofed emails that appear to originate from a legitimate company domain. Which three email authentication mechanisms defend against this?",
+      options:["SPF, DKIM, and DMARC","SSL/TLS, HTTPS, and S/MIME","LDAP, Kerberos, and RADIUS","ARP inspection, DNS, and DHCP snooping"], answer:0,
+      explanation:"SPF (Sender Policy Framework) validates that the sending mail server IP is authorised for the domain. DKIM (DomainKeys Identified Mail) adds a cryptographic signature to the email header. DMARC ties both together with a policy for handling failures. Together they are the standard email domain authentication trio.",
+      trap:"S/MIME encrypts and signs email content but does not validate the sending domain. SPF, DKIM, and DMARC are specifically for domain spoofing defence." }
+  ]
+},
+{
+  id:'w4', icon:'🔥', week:'Week 4', name:'Firewalls & ASA',
+  desc:'Firewall types, ASA security levels, DMZ, ZBF, FTP, fragmentation',
+  color:'#f59e0b',
+  questions:[
+    { q:"Which firewall type is STATELESS and filters traffic based only on IP headers and ports?",
+      options:["Application-level proxy","Stateful packet filter","Packet filtering firewall","Circuit-level gateway"], answer:2,
+      explanation:"Packet filter = stateless, inspects each packet independently. No connection state tracked. Circuit-level gateway IS stateful (validates TCP handshake state).",
+      trap:"Circuit-level gateway (D) is also simple but IS stateful — validates the TCP handshake." },
+    { q:"On a Cisco ASA, what security level is assigned to the 'outside' interface by default?",
+      options:["100","50","0","1"], answer:2,
+      explanation:"Outside = 0 (untrusted). Inside = 100 (trusted). DMZ = ~50. Higher security levels can initiate connections to lower; lower cannot connect to higher without an explicit ACL.",
+      trap:"Security level 0 = LEAST trusted. Students think 0 = no restriction — it means untrusted." },
+    { q:"A web server needs to be accessible from the internet but protected from internal compromise. Best architecture?",
+      options:["Inside network with port forwarding","DMZ between two firewall interfaces","Outside the firewall","Application proxying on the internal interface"], answer:1,
+      explanation:"DMZ = separate network segment accessible from outside but isolated from the internal network. Standard three-legged firewall architecture.",
+      trap:"Port forwarding to the inside (A) exposes the internal network if the server is compromised." },
+    { q:"Which Cisco ASA mode acts as a Layer 2 bridge, invisible to routers, and does NOT perform NAT?",
+      options:["Routed mode","Transparent mode","Multi-context mode","Single-context mode"], answer:1,
+      explanation:"Transparent mode = Layer 2 bridge, no routing, no NAT. Routed mode = the DEFAULT, performs Layer 3 routing and NAT.",
+      trap:"Routed mode is the DEFAULT. Transparent mode must be explicitly configured." },
+    { q:"Which firewall type provides the highest inspection by examining application-layer data at the cost of performance?",
+      options:["Packet filter","Stateful packet filter","Application-level proxy","Zone-based firewall"], answer:2,
+      explanation:"Application-level proxy inspects the full payload at Layer 7, terminates and re-establishes connections. Deepest inspection, highest latency.",
+      trap:"ZBF can include app inspection but is a configuration framework, not a pure L7 proxy type." },
+    { q:"In a Cisco ZBF, what happens to traffic between two interfaces in the SAME zone?",
+      options:["Requires explicit permit","Permitted by default — no policy needed","Denied by default","Requires a zone-pair config"], answer:1,
+      explanation:"ZBF: intra-zone (same zone) = allowed by default. Inter-zone (different zones) = DENIED by default unless a zone-pair policy permits it.",
+      trap:"Inter-zone is blocked; intra-zone is allowed. These are frequently swapped in exam questions." },
+    { q:"A packet filter receives a TCP ACK with no matching permit rule. What happens?",
+      options:["Allowed because ACK packets are always replies","Allowed only if stateful inspection is enabled","Dropped — packet filters cannot verify ACK belongs to an established session","Forwarded to the DMZ"], answer:2,
+      explanation:"Packet filters are stateless — they cannot tell if an ACK is legitimate or a forged probe. Without a matching rule it is dropped. Only stateful firewalls track sessions and auto-allow returns.",
+      trap:"Stateful firewalls DO allow return ACKs automatically. Stateless packet filters cannot." },
+    { q:"Which is a WEAKNESS of packet filtering firewalls?",
+      options:["Slow and adds latency","Cannot inspect payloads — blind to application-layer attacks","Incompatible with TCP","Requires a proxy per protocol"], answer:1,
+      explanation:"Packet filters see headers only (IP, port, flags) — blind to payloads, app-layer attacks, and fragmented packets.",
+      trap:"Needing a proxy per protocol (D) is the weakness of Application-Level Proxies, not packet filters." },
+    { q:"The Cisco ASA 5505 used in the lab operates as which firewall type?",
+      options:["Packet filter","Application-level proxy","Stateful packet filter","Zone-based firewall"], answer:2,
+      explanation:"The ASA 5505 is a stateful packet filter. Lab Part 3 demonstrates this — once ICMP inspection is added to the MPF policy, return traffic is automatically permitted.",
+      trap:"The ASA is NOT an application proxy. The lab explicitly demonstrates stateful behaviour via ICMP inspection." },
+    { q:"In Active FTP, which port does the SERVER use to open the data channel back to the client?",
+      options:["Port 21","Port 20","Port 1024","A random high port"], answer:1,
+      explanation:"Active FTP: Client→Server:21 (control). Client tells server its data port (e.g. 5151). Server:20 then opens the data channel TO the client. This is problematic for packet filter firewalls since a server-initiated connection looks like an inbound attack.",
+      trap:"Port 21 is the control channel. Port 20 is the data channel — server-initiated in Active FTP." },
+    { q:"A fragmentation attack sends packet 1 (offset=0, MF=1) to port 25 (allowed) and packet 2 (offset=1, MF=0) to port 23 (blocked). What happens at a basic packet filter?",
+      options:["Both packets are blocked","The firewall blocks packet 2 because port 23 is blocked","The firewall lets both fragments through and the host reassembles them revealing port 23","The firewall reassembles before inspecting"], answer:2,
+      explanation:"A basic packet filter checks each fragment independently. Packet 1 = port 25 (allowed). Packet 2 = later fragment, no port in header = no rule match = let through. Host reassembles: reveals destination port 23. Firewall BYPASSED.",
+      trap:"Packet filters do NOT reassemble fragments. Only stateful firewalls or proxies can detect this attack." },
+    { q:"Which firewall type is the only one that TRULY understands application content and can scan SMTP for viruses?",
+      options:["Packet filter","Circuit-level proxy","Stateful packet filter","Application-level proxy"], answer:3,
+      explanation:"Application-level proxy is the only type that understands protocol semantics — it can scan SMTP attachments for malware, filter specific FTP commands, and apply per-protocol policy.",
+      trap:"Stateful firewalls track connection state but cannot read application content. Only app-level proxies can." },
+    // ORDER
+    { type:'order', q:"Put the 4 classical firewall types in order from LEAST to MOST secure:",
+      items:["Packet Filter — stateless, headers only (L3/L4)","Circuit-Level Proxy — validates TCP handshake (L5)","Stateful Packet Filter — tracks connection state (L4)","Application-Level Proxy — full L7 deep inspection"],
+      explanation:"Security increases through generations: Packet Filter (stateless, L3/L4) → Circuit-Level (validates handshake, L5) → Stateful PF (connection tracking, L4) → Application Proxy (full L7 content inspection). Performance impact is the inverse of security.",
+      trap:"Circuit-Level is 2nd gen but Stateful PF is 3rd. Do not swap these — Stateful PF is more capable than Circuit-Level." },
+    { q:"What is the FUNDAMENTAL limitation of ALL firewall types when network traffic is encrypted end-to-end?",
+      options:["They cannot process traffic at wire speed","They are blind to the payload inside encrypted traffic — cannot inspect content","They cannot filter based on source IP addresses","They do not support IPv6 traffic"], answer:1,
+      explanation:"Encryption is a fundamental blind spot for all firewalls. When traffic is TLS/HTTPS encrypted, every firewall type — including application-level proxies — sees only the outer IP/port headers and cannot inspect the payload for malware, data exfiltration, or protocol violations without dedicated SSL/TLS inspection. This is explicitly highlighted in the W4 lecture as a key limitation.",
+      trap:"Even the most advanced Application-Level Proxy is blind to encrypted payload content unless SSL/TLS inspection is specifically configured. Encryption undermines content-based filtering at every firewall tier." }
+  ]
+},
+{
+  id:'w5', icon:'🔍', week:'Week 5', name:'IDS, IPS & Detection',
+  desc:'Inline vs promiscuous, TP/FP/TN/FN, signatures, HIPS/NIPS, honeypots',
+  color:'#8b5cf6',
+  questions:[
+    { q:"An IPS is placed so that ALL traffic must pass through it. What deployment mode is this?",
+      options:["Promiscuous mode","Passive mode","Inline mode","Mirror mode"], answer:2,
+      explanation:"Inline = sensor in the traffic path, can DROP packets. Promiscuous/Passive/Mirror = sensor receives a copy of traffic only (IDS deployment).",
+      trap:"Promiscuous and passive describe IDS deployment. Inline = IPS only." },
+    { q:"A legitimate email campaign triggers an IPS alert. What type of alarm?",
+      options:["True Positive","True Negative","False Positive","False Negative"], answer:2,
+      explanation:"False Positive = alert raised when no attack occurred. Campaign is legitimate but triggered the IDS rule. TP = correct detection of real attack. FN = missed real attack.",
+      trap:"An alert was raised so students say TP — but the event was legitimate, not an attack." },
+    { q:"An IPS uses a statistical baseline of normal behaviour to detect deviations. Which detection method?",
+      options:["Signature-based","Anomaly-based","Policy-based","Reputation-based"], answer:1,
+      explanation:"Anomaly-based = establishes baseline, alerts on deviations. Can detect novel/0-day attacks but generates more false positives. Signature-based = matches known patterns.",
+      trap:"Anomaly ≠ policy-based. Anomaly = statistical deviation from baseline. Policy = explicit defined rules." },
+    { q:"An IPS signature triggered by a SINGLE packet containing a specific byte sequence is called:",
+      options:["Composite signature","Atomic signature","Stateful signature","Heuristic signature"], answer:1,
+      explanation:"Atomic = single packet triggers the alert, no state tracking needed. Composite = pattern across MULTIPLE packets requiring state tracking.",
+      trap:"Atomic = one packet = simple. Composite = multiple packets = stateful. Do not confuse." },
+    { q:"Which IDS/IPS type runs on individual endpoints and can detect OS-specific attacks like buffer overflows?",
+      options:["NIPS","HIPS","Inline IPS","Promiscuous IDS"], answer:1,
+      explanation:"HIPS (Host-based IPS) runs as an agent with full OS-level context — detects buffer overflows, privilege escalation, and file modifications. NIPS sees network traffic but not host OS internals.",
+      trap:"NIPS sees all network traffic but HIPS has the per-host OS context needed for kernel-level detection." },
+    { q:"An attacker spreads a port scan over 7 days sending 1 packet/hour per port. Which detection method catches this?",
+      options:["Signature-based","Anomaly-based","Reputation-based","Policy-based"], answer:1,
+      explanation:"Anomaly-based tracks statistical patterns over time. A slow scan deviating from normal traffic baselines, even spread over days, appears anomalous.",
+      trap:"Signature-based only catches this if a specific 'slow scan' signature exists — which typically doesn't." },
+    { q:"What is the MOST dangerous outcome of a False Negative?",
+      options:["Excessive alert fatigue","Legitimate traffic blocked","A real attack passes through undetected","IPS requires additional tuning"], answer:2,
+      explanation:"False Negative = attack present, no alert. Attacker passes through undetected — the organisation has NO awareness of the breach. FP consequences are options A and B.",
+      trap:"Alert fatigue (A) = consequence of False Positives, not False Negatives. FN = WORST." },
+    { q:"Which IPS action terminates the TCP session by sending RST packets to both sides?",
+      options:["Drop packet","Alert only","TCP reset","Shun / blacklist"], answer:2,
+      explanation:"TCP reset sends RST to both attacker and victim, terminating the session. Drop = silently discards. Shun = blocks all future traffic from that source IP.",
+      trap:"Drop is silent (one packet discarded). TCP reset actively terminates the entire connection." },
+    { q:"Which of the following is NOT a valid IPS action?",
+      options:["Drop the offending packet","Send SNMP trap alert","Inoculate the attacking host","Shun the source IP"], answer:2,
+      explanation:"'Inoculate the attacking host' is NOT a real IPS action — it is an exam trap. Valid actions: Alert, Drop, TCP Reset, Shun source IP, SNMP trap.",
+      trap:"Classic fake IPS actions: 'Inoculate', 'Isolate host', 'Reset UDP', 'Auto reroute', 'Encrypt trigger pkt' — all FAKE." },
+    { q:"Root password was changed but no admin login is recorded. Which detection type would catch this?",
+      options:["Anomaly-based — deviation from baseline","Misuse-based — known bad pattern of unauthorized root change","Policy-based — rule: no root changes allowed after hours","Honeypot — root change triggers alert"], answer:1,
+      explanation:"Misuse detection (signature/rule-based) uses known-bad patterns. An unauthorised root password change is a specific known indicator of compromise — a rule would match this exact event.",
+      trap:"4 failed logins = anomaly (statistical deviation). Root pwd changed without login = misuse (known bad pattern)." },
+    { q:"NIPS cannot effectively inspect which type of traffic without additional setup?",
+      options:["UDP traffic","Broadcast traffic","End-to-end encrypted traffic (TLS/SSH)","ICMP traffic"], answer:2,
+      explanation:"NIPS sees ciphertext when traffic is TLS/SSH encrypted end-to-end. It cannot read the payload without TLS inspection (SSL/TLS decryption proxy), which introduces its own risks.",
+      trap:"HIPS on the endpoint CAN see decrypted content. NIPS without TLS inspection is blind to encrypted payloads." },
+    { q:"A honeypot is set up to attract attackers. What is the ONE thing a honeypot must NEVER be?",
+      options:["Easy to find by attackers","Monitored by security staff","Trusted as a safe network resource","Isolated from production systems"], answer:2,
+      explanation:"A honeypot must NEVER be trusted — it may be compromised and used as a launching pad for attacks against other systems. It should be isolated and heavily monitored but never treated as trustworthy.",
+      trap:"'Easy to find by attackers' is desirable for a honeypot — that is the whole point. Never trusted = the real rule." },
+    { q:"Which statement BEST describes the relationship between IDS and IPS in a deployed security architecture?",
+      options:["IPS replaces IDS — there is no reason to deploy both","IDS and IPS are mutually exclusive and will interfere with each other","IDS and IPS are complementary — they can and should be deployed together","IPS is only used in government networks; IDS for commercial"], answer:2,
+      explanation:"The lecture explicitly states that IDS and IPS are NOT mutually exclusive — they complement each other. IDS provides passive detection, logging, and alerting without impacting traffic. IPS provides active inline blocking. Deploying both provides defence in depth: the IDS can catch what the IPS misses and provides forensic logging.",
+      trap:"A common assumption is that IPS 'replaces' IDS. The lecture is clear they are complementary and can be deployed together." },
+    { q:"An inline IPS device experiences a hardware failure during business hours. What is the IMMEDIATE impact on network traffic?",
+      options:["No impact — the IPS is passive and traffic routes around it","Traffic is automatically rerouted through a backup IDS","Network traffic may be disrupted or halted because the inline device is physically in the traffic path","Only security alerts stop — data traffic continues unaffected"], answer:2,
+      explanation:"An inline IPS sits physically in the traffic path. If it fails, it can disrupt or halt all traffic flowing through that network segment. This is a critical trade-off of inline deployment: active protection comes at the cost of being a potential single point of failure for network availability.",
+      trap:"IDS (promiscuous/passive) failure only stops detection — traffic is unaffected. IPS (inline) failure can stop the network entirely — a key operational difference to understand." }
+  ]
+},
+{
+  id:'w6', icon:'🔑', week:'Week 6', name:'AAA, TACACS+, Kerberos',
+  desc:'Auth factors, TACACS+ vs RADIUS, Kerberos flow, EAP methods, LDAP, PKI',
+  color:'#22c55e',
+  questions:[
+    { q:"A network admin uses a smart card AND enters a PIN. What type of authentication is this?",
+      options:["Single-factor (what you know)","Two-factor (what you have + what you know)","Two-factor (what you are + what you know)","Single-factor (what you have)"], answer:1,
+      explanation:"Smart card = 'what you have'. PIN = 'what you know'. Two DIFFERENT factor categories = MFA. Two passwords = still single-factor (both 'what you know').",
+      trap:"Two items from the SAME factor category = still single-factor. Different categories = MFA." },
+    { q:"Which protocol uses TCP port 49 and encrypts the ENTIRE packet body?",
+      options:["RADIUS","TACACS+","DIAMETER","Kerberos"], answer:1,
+      explanation:"TACACS+ = TCP 49, full packet encryption. RADIUS = UDP 1812/1813, encrypts password field ONLY. Kerberos = TCP/UDP 88.",
+      trap:"RADIUS uses UDP not TCP. Very commonly swapped in exam questions." },
+    { q:"An org needs granular per-command authorisation for device administration. Which protocol?",
+      options:["RADIUS with UDP","TACACS+ with TCP","LDAP with TLS","Kerberos v5"], answer:1,
+      explanation:"TACACS+ separates Auth, Authz, and Accounting — allows per-command authorisation queries. RADIUS combines auth+authz and is better for network access (802.1X, VPN), not device admin.",
+      trap:"RADIUS is the first thought for AAA but for DEVICE ADMIN with per-command control, TACACS+ is the answer." },
+    { q:"In Kerberos, what does the TGT allow the client to do?",
+      options:["Directly access any service","Request service-specific tickets from the TGS without re-entering credentials","Authenticate to the AS directly","Decrypt messages from the app server"], answer:1,
+      explanation:"TGT (issued by AS after initial login) allows the client to get Service Tickets from the TGS WITHOUT re-entering a password. TGT ≠ service access — it only gets you the right to request tickets.",
+      trap:"TGT does NOT grant access to services — it grants the right to request Service Tickets from the TGS." },
+    { q:"RADIUS combines which two AAA components into a single exchange?",
+      options:["Authentication and Accounting","Authentication and Authorization","Authorization and Accounting","All three (Auth, Authz, Accounting)"], answer:1,
+      explanation:"RADIUS combines Authentication and Authorization in one exchange — Access-Accept includes authz attributes. TACACS+ keeps all three separate.",
+      trap:"Option D (all three) is a trap. Only Auth+Authz are combined in RADIUS. Accounting is a separate exchange." },
+    { q:"A system denies login because the user is connecting from an unusual geographic location. Which auth factor?",
+      options:["What you know","What you have","What you are","Where you are"], answer:3,
+      explanation:"Factor 4: Where you are — uses geographic location, IP address, GPS, or network segment. Students often only know 3 factors.",
+      trap:"Most students only know 3 factors. Factor 4 (location / WHERE you are) is lecture-specific content." },
+    { q:"What is the PRIMARY security weakness of RADIUS compared to TACACS+?",
+      options:["RADIUS uses TCP which is less reliable","RADIUS only encrypts the password field, leaving the rest in cleartext","RADIUS does not support multiple auth servers","RADIUS cannot perform accounting"], answer:1,
+      explanation:"RADIUS encrypts ONLY the password field. Other attributes (username, VLAN assignments) are sent in cleartext. TACACS+ encrypts the ENTIRE packet body.",
+      trap:"Option A is backwards — RADIUS uses UDP (not TCP), and that is not the primary security issue." },
+    { q:"Kerberos uses which type of cryptography?",
+      options:["Asymmetric (public/private key pair)","Symmetric (shared secret keys only)","Both symmetric and asymmetric","Hashing only"], answer:1,
+      explanation:"Kerberos is SYMMETRIC-KEY only. It uses shared secret keys and a trusted third party (KDC = AS + TGS). It does NOT use asymmetric/public key cryptography.",
+      trap:"Classic trap: 'Kerberos uses asymmetric crypto' — it does NOT. Symmetric keys only." },
+    { q:"Which EAP method requires BOTH the client AND the server to present digital certificates?",
+      options:["EAP-FAST","PEAP","LEAP","EAP-TLS"], answer:3,
+      explanation:"EAP-TLS = mutual certificate authentication. Both sides need certs — strongest method but requires a full PKI for every client. PEAP = server cert only. EAP-FAST = PAC files. LEAP = passwords only.",
+      trap:"PEAP requires only a SERVER certificate. EAP-TLS requires BOTH sides to have certificates." },
+    { q:"LDAP (Lightweight Directory Access Protocol) uses which default port?",
+      options:["TCP 389","TCP 443","UDP 514","TCP 636"], answer:0,
+      explanation:"LDAP = TCP 389. LDAPS (LDAP over TLS) = TCP 636. LDAP is a lightweight version of X.500's DAP for accessing directory services.",
+      trap:"TCP 636 is LDAPS (secure). TCP 389 is plain LDAP. Both may appear in MCQs." },
+    { q:"Which certificate revocation method checks validity IN REAL-TIME (on-demand)?",
+      options:["CRL — Certificate Revocation List","OCSP — Online Certificate Status Protocol","Both are real-time","Neither — you must re-download the certificate"], answer:1,
+      explanation:"OCSP provides real-time certificate status checks. CRL is a periodically downloaded list — it can be days out of date. OCSP Stapling has the server pre-fetch the OCSP response.",
+      trap:"CRL sounds instant but it is a periodically updated list — there is a lag between revocation and CRL update." },
+    { q:"An SMS OTP sent to a user's phone represents which authentication factor?",
+      options:["What you know — it is a password","What you have — the phone/SIM card","What you are — biometric","Where you are — GPS location"], answer:1,
+      explanation:"SMS OTP = 'what you have' (possession of the SIM card / phone). Note the security weakness: SIM-swap attacks can compromise this factor.",
+      trap:"SMS OTP feels like 'what you know' because it's a code, but the factor is the physical device you possess." },
+    // ORDER
+    { type:'order', q:"Put the Kerberos authentication steps in the correct order:",
+      items:["Client sends AS-REQ (identity) to the Authentication Server","AS returns TGT encrypted with user's key (AS-REP)","Client sends TGT to TGS to request a Service Ticket (TGS-REQ)","TGS returns Service Ticket encrypted with service's key (TGS-REP)","Client presents Service Ticket to target server (AP-REQ)"],
+      explanation:"Kerberos flow: Client→AS (AS-REQ) → AS→Client TGT (AS-REP) → Client→TGS with TGT (TGS-REQ) → TGS→Client Service Ticket (TGS-REP) → Client→Server with ticket (AP-REQ). No password travels on the wire after step 1.",
+      trap:"The TGT is used to get a Service Ticket from the TGS, which is then used to access the actual service — two separate request/reply cycles." },
+    { q:"A user's fingerprint template is stolen from a database. Why is this a more serious problem than a stolen password?",
+      options:["Fingerprints are stored in plaintext — passwords are hashed","Biometric credentials CANNOT be revoked or reissued — you cannot change your fingerprints","Fingerprint readers cost more to replace than password systems","Stolen biometric data allows physical access to all buildings"], answer:1,
+      explanation:"Biometrics cannot be revoked. If your fingerprint template is compromised, you cannot issue new fingerprints. Passwords can be changed; tokens can be replaced; biometrics are permanently compromised once leaked. This is a fundamental limitation explicitly covered in the W6 lecture.",
+      trap:"This is a key exam point: unlike passwords or smart cards, biometrics cannot be revoked or reissued if compromised." },
+    { q:"Which biometric modality achieves the LOWEST Equal Error Rate (EER), making it the MOST accurate?",
+      options:["Fingerprint","Voice recognition","Iris scan","Facial recognition"], answer:2,
+      explanation:"Iris scan has an EER of less than 1 in a million — the most accurate biometric. Fingerprint is the most widely deployed but has a higher EER (~0.1%) and the lecture notes that ~90% of fingerprint readers can be defeated with a Play-Doh cast of the fingerprint. Low EER = fewer false accepts AND false rejects.",
+      trap:"Fingerprints are the most COMMON biometric but iris scan is the most ACCURATE. Common vs accurate are different properties." },
+    { q:"According to the course materials (citing the RockYou 2009 breach), what percentage of network breaches involve weak or stolen credentials?",
+      options:["25%","50%","76%","99%"], answer:2,
+      explanation:"76% of network breaches involve weak or stolen credentials, cited in the course materials referencing the RockYou 2009 analysis. This statistic is used to justify the critical importance of strong password policies, multi-factor authentication, and robust AAA frameworks.",
+      trap:"The specific figure 76% is exam-relevant. It is directly cited in the lecture materials and cheat sheet as the justification for AAA investment." }
+  ]
+},
+{
+  id:'w7', icon:'🔒', week:'Week 7', name:'IPSec, Crypto & VPN',
+  desc:'AH vs ESP, transport/tunnel modes, IKE phases, hash functions, block ciphers',
+  color:'#06b6d4',
+  questions:[
+    { q:"Which IPSec protocol provides DATA CONFIDENTIALITY (encryption)?",
+      options:["AH only","ESP only","Both AH and ESP","Neither — IPSec uses TLS"], answer:1,
+      explanation:"ESP (proto 50) encrypts payload — provides confidentiality. AH (proto 51) provides integrity + authentication but ZERO encryption.",
+      trap:"AH provides strong authentication but absolutely ZERO confidentiality — very commonly confused." },
+    { q:"A site-to-site VPN must encrypt the ENTIRE original IP packet including its header. Which IPSec mode?",
+      options:["Transport mode","Tunnel mode","Aggressive mode","Quick mode"], answer:1,
+      explanation:"Tunnel mode encapsulates the ENTIRE original packet (including original IP header) inside a new packet with a new outer IP header. Used for gateway-to-gateway VPNs. Transport mode = payload only.",
+      trap:"Aggressive Mode and Quick Mode are IKE negotiation phase names, NOT encryption modes." },
+    { q:"Why is AH NOT compatible with NAT?",
+      options:["AH uses UDP incompatible with NAT","AH hashes the outer IP header — NAT modifies this, breaking the hash","AH requires a dedicated IP NAT cannot translate","AH only works with IPv6"], answer:1,
+      explanation:"AH hashes the ENTIRE packet including the outer IP header. NAT changes the source IP, which invalidates the AH integrity hash. ESP does NOT hash the outer header, so it works with NAT-T (UDP 4500).",
+      trap:"You must know WHY AH breaks NAT — the outer IP hash is the specific technical reason." },
+    { q:"What is the PRIMARY purpose of IKE Phase 1?",
+      options:["Negotiate encryption algorithms for data traffic","Establish a secure authenticated management channel (ISAKMP SA)","Exchange encrypted user data","Create IPSec SAs for ESP and AH"], answer:1,
+      explanation:"IKE Phase 1 = ISAKMP SA (management channel, authenticates peers). Phase 2 (Quick Mode) uses this channel to create the actual IPSec SAs for data traffic.",
+      trap:"Phase 1 = management SA. Phase 2 = data SAs. These are frequently swapped." },
+    { q:"How many total messages does IKEv1 use across Phase 1 (Main Mode) + Phase 2 (Quick Mode)?",
+      options:["3","6","9","12"], answer:2,
+      explanation:"IKEv1 Phase 1 Main Mode = 6 messages. Phase 2 Quick Mode = 3 messages. Total = 9. IKEv2 = 6 total (more efficient, DoS-resistant).",
+      trap:"IKEv2 = 6 total — students confuse the IKEv1 Phase 1 count (6) with the IKEv2 total (also 6)." },
+    { q:"A message is signed with a private RSA key. What does the RECIPIENT use to verify?",
+      options:["Sender's private key","Recipient's private key","Sender's public key","A shared symmetric key"], answer:2,
+      explanation:"Digital signature: sender signs with PRIVATE key, recipient verifies with sender's PUBLIC key. This proves authenticity (who signed) and integrity (not modified).",
+      trap:"Encryption direction (public key encrypts, private key decrypts) is REVERSED for signatures." },
+    { q:"Which hash function produces a 160-bit output and is DEPRECATED?",
+      options:["MD5","SHA-1","SHA-256","SHA-512"], answer:1,
+      explanation:"SHA-1 = 160-bit output, deprecated after the SHAttered collision attack in 2017. MD5 = 128-bit (also deprecated). SHA-256 = current standard.",
+      trap:"MD5 is also deprecated but produces 128 bits (not 160). SHA-1 = 160-bit is the specific hook." },
+    { q:"What does Diffie-Hellman (DH) provide in IKE Phase 1?",
+      options:["Data encryption","Authentication","Key exchange only","Digital signatures"], answer:2,
+      explanation:"DH is a KEY EXCHANGE algorithm only. It establishes a shared secret over an insecure channel but provides NO authentication — it is vulnerable to MITM without separate authentication (PSK or certs).",
+      trap:"Classic trap: 'DH is encryption.' DH = KEY EXCHANGE ONLY. Not encryption, not authentication." },
+    { q:"IPSec Transport mode is used for which scenario?",
+      options:["Gateway-to-gateway (site-to-site) VPN","Host-to-host communication, original IP header preserved","Any scenario requiring full packet encryption","Replacing the original IP header with a new outer header"], answer:1,
+      explanation:"Transport mode = payload encrypted only, original IP header intact = host-to-host VPN. Tunnel mode wraps the entire original packet with a NEW outer header = site-to-site VPN.",
+      trap:"Transparent mode (D) is an ASA firewall mode (Layer 2 bridge), NOT an IPSec mode." },
+    { q:"Which block cipher mode encrypts each block INDEPENDENTLY and reveals patterns in identical plaintext blocks?",
+      options:["CBC — Cipher Block Chaining","GCM — Galois/Counter Mode","ECB — Electronic Codebook","CTR — Counter Mode"], answer:2,
+      explanation:"ECB encrypts each block independently. Identical plaintext blocks produce identical ciphertext blocks, revealing patterns. The source materials explicitly mark ECB as NEVER to use for meaningful data.",
+      trap:"CBC XORs each block with the previous ciphertext, solving ECB's pattern problem. ECB = insecure by design." },
+    { q:"HMAC adds a secret key to a hash function. What does this provide that a plain hash does NOT?",
+      options:["Confidentiality","Authentication — proves the hash was created by a key holder","Compression","Forward secrecy"], answer:1,
+      explanation:"Plain hash = integrity only (anyone can compute it). HMAC = integrity + authentication (only someone with the shared secret can produce a valid HMAC). Used in IPSec, TLS, SNMP v3.",
+      trap:"A hash alone cannot prove origin — anyone can re-hash data. HMAC's shared secret provides authentication." },
+    { q:"AES-GCM is preferred for TLS 1.2/1.3. What does the G (GCM) provide over regular AES-CBC?",
+      options:["Faster speed only","Both Confidentiality AND Integrity/Authentication (authenticated encryption)","Larger key sizes","Post-quantum resistance"], answer:1,
+      explanation:"AES-GCM = authenticated encryption (AEAD). It provides confidentiality (encryption) AND integrity/authenticity (GHASH MAC) in a single operation. AES-CBC provides confidentiality only.",
+      trap:"AES-CBC still needs a separate MAC (like HMAC-SHA). AES-GCM bundles both together — more efficient and secure." },
+    // ORDER questions
+    { type:'order', q:"Put the IKEv1 negotiation steps in the correct order:",
+      items:["IKE Phase 1 — peers authenticate and establish ISAKMP SA (management channel)","IKE Phase 2 — Quick Mode negotiates IPSec SAs (AH/ESP) for data traffic","Encrypted data flows over the IPSec tunnel using negotiated SAs","SA expires or is manually cleared — renegotiation triggered"],
+      explanation:"IKEv1: Phase 1 builds the secure management channel (ISAKMP SA) → Phase 2 uses it to create data SAs (IPSec SAs) → Data flows encrypted → Eventually SAs expire and must be renegotiated.",
+      trap:"Phase 1 must complete before Phase 2 can start — Phase 2 relies on the Phase 1 ISAKMP SA for security." },
+    { type:'order', q:"Put these cryptographic algorithms in order from WEAKEST to STRONGEST (key strength/security):",
+      items:["DES — 56-bit symmetric (broken)","3DES — 112/168-bit symmetric (legacy)","AES-128 — 128-bit symmetric (current)","AES-256 — 256-bit symmetric (current, strongest)"],
+      explanation:"Security order: DES (56-bit, broken by brute force) → 3DES (effective 112-bit, slow/legacy) → AES-128 (current standard, fast) → AES-256 (highest security, quantum-resistant margin). SHA-1/MD5 similarly deprecated.",
+      trap:"3DES has 3 keys of 56-bit each (168-bit) but effective security is ~112-bit due to meet-in-the-middle attacks." },
+    { q:"An IPSec Security Association (SA) is described as unidirectional. What does this mean for a standard two-way communication session?",
+      options:["One SA can handle both inbound and outbound traffic simultaneously","Two separate SAs are required — one for each direction of traffic","The SA direction is negotiated dynamically during the session","Only outbound traffic requires an SA; inbound is handled by the firewall"], answer:1,
+      explanation:"IPSec SAs are unidirectional by definition. Each SA applies to traffic flowing in one direction only. A bidirectional (two-way) communication therefore requires TWO SAs: one for each direction. Each SA is uniquely identified by its SPI (Security Parameter Index), Destination IP address, and Protocol (AH or ESP).",
+      trap:"SA unidirectionality is fundamental. Always 2 SAs for a full bidirectional IPSec session — a common exam question." },
+    { q:"IPSec provides four security services. Three are Confidentiality, Integrity, and Authentication. What is the FOURTH?",
+      options:["Non-repudiation","Anti-replay protection","Forward secrecy","Key rotation"], answer:1,
+      explanation:"The four IPSec security pillars are: Confidentiality (encryption via ESP), Integrity (hash verification), Authentication (peer identity verification), and Anti-replay (sequence numbers in a sliding window prevent captured packets from being re-transmitted by an attacker).",
+      trap:"Non-repudiation and forward secrecy are important security properties but are NOT listed as the four IPSec pillars in the course materials. Anti-replay is the correct fourth." },
+    { q:"IPSec operates at which layer of the TCP/IP model, and how does this compare to SSL/TLS?",
+      options:["IPSec = Application layer; SSL/TLS = Transport layer","IPSec = Transport layer; SSL/TLS = Network layer","IPSec = Network layer (Layer 3); SSL/TLS = Application layer","Both operate at the Transport layer"], answer:2,
+      explanation:"IPSec operates at Layer 3 (Network layer) — it protects all IP packets transparently regardless of the application. SSL/TLS operates at the Application layer (above TCP), requiring application support to implement. IPSec's Layer 3 position means all traffic over an IPSec tunnel is protected without any application changes.",
+      trap:"SSL/TLS feels like Layer 4/Transport because it works with TCP, but it sits above TCP in the Application layer. IPSec is Layer 3." },
+    { q:"In an MPLS network, which device is responsible for ASSIGNING labels to incoming packets at the network edge?",
+      options:["LSR — Label Switch Router, which operates in the network core","LER — Label Edge Router, which adds labels at ingress and removes them at egress","FEC — Forwarding Equivalence Class defines which packets share a label","LDP — Label Distribution Protocol distributes label mappings"], answer:1,
+      explanation:"LER (Label Edge Router) sits at the EDGE of the MPLS network. It assigns (pushes) labels onto incoming packets and removes (pops) labels from outgoing packets. LSR (Label Switch Router) operates in the CORE — it only swaps labels and forwards packets along the LSP. FEC is the classification concept; LDP is the label signalling protocol.",
+      trap:"LSR and LER are frequently confused. Remember: LER = Edge (assigns and removes labels). LSR = Core (swaps labels only)." }
+  ]
+},
+{
+  id:'w8', icon:'📡', week:'Week 8', name:'Wireless, Syslog & SNMP',
+  desc:'WEP/WPA/WPA2, EAP methods, Syslog severities, SNMP v3, CAPWAP, roaming',
+  color:'#ec4899',
+  questions:[
+    { q:"WEP was broken because of IV reuse. What is the IV size in WEP?",
+      options:["24-bit","48-bit","64-bit","128-bit"], answer:0,
+      explanation:"WEP uses a 24-bit IV — too short. With high traffic, IVs repeat, allowing attackers to recover the RC4 keystream and decrypt traffic. Aircrack-ng exploits this in minutes.",
+      trap:"WPA/TKIP uses 48-bit IVs to address this. 24-bit = WEP is the MCQ data point to remember." },
+    { q:"Which wireless standard uses CCMP/AES and is the current recommended standard (802.11i)?",
+      options:["WEP","WPA / TKIP","WPA2 / CCMP","WPA3 / SAE"], answer:2,
+      explanation:"WPA2 (802.11i) uses CCMP (Counter mode CBC-MAC Protocol) with AES. WPA/TKIP was a temporary fix deprecated 2012. WPA3 uses SAE and is newer but WPA2/CCMP is the exam standard.",
+      trap:"WPA3 is newer but WPA2/CCMP is still the primary answer for 'current recommended' in most exam contexts." },
+    { q:"EAP methods ordered WEAKEST to STRONGEST security:",
+      options:["EAP-TLS → PEAP → EAP-FAST → LEAP","LEAP → EAP-FAST → PEAP → EAP-TLS","PEAP → LEAP → EAP-TLS → EAP-FAST","EAP-FAST → PEAP → LEAP → EAP-TLS"], answer:1,
+      explanation:"Weakest → strongest: LEAP (passwords, deprecated Cisco) → EAP-FAST (PAC files, no certs) → PEAP (server cert only, MS-CHAPv2 inside tunnel) → EAP-TLS (mutual certs, strongest).",
+      trap:"PEAP ≠ EAP-TLS. PEAP only needs a server cert. EAP-TLS needs BOTH sides to have certificates." },
+    { q:"In Syslog, which severity number represents the MOST SEVERE condition (Emergency)?",
+      options:["7","4","1","0"], answer:3,
+      explanation:"Syslog: 0=Emergency (worst), 1=Alert, 2=Critical, 3=Error, 4=Warning, 5=Notification, 6=Informational, 7=Debug (least severe). Mnemonic: Every Awesome Cisco Engineer Will Need Ice Daily.",
+      trap:"LOWER numbers = MORE severe. Students assume higher = worse, but it is the opposite." },
+    { q:"Which SNMP version provides HMAC authentication AND AES/3DES encryption?",
+      options:["SNMPv1","SNMPv2c","SNMPv3 with authPriv","SNMPv3 with noAuthNoPriv"], answer:2,
+      explanation:"SNMPv3 authPriv = HMAC-MD5/SHA authentication + DES/3DES/AES encryption. v1/v2c send community strings in plaintext. SNMPv3 noAuthNoPriv = no security at all.",
+      trap:"SNMPv2c is often mistaken for 'secure' — it still uses plaintext community strings." },
+    { q:"In 802.1X, which device FORWARDS authentication requests from the client to the RADIUS server?",
+      options:["Supplicant","Authenticator (AP/Switch)","Authentication Server","Certificate Authority"], answer:1,
+      explanation:"802.1X roles: Supplicant (client) → Authenticator (AP or switch — relays EAP messages) → Authentication Server (RADIUS). The Authenticator is the middleman.",
+      trap:"Authenticator ≠ Authentication Server. The AP/switch is the authenticator; RADIUS is the auth server." },
+    { q:"WPA3 replaces the WPA2 4-way handshake with which protocol for forward secrecy?",
+      options:["CCMP","TKIP","SAE (Simultaneous Authentication of Equals)","EAP-TLS"], answer:2,
+      explanation:"WPA3 uses SAE (aka Dragonfly). SAE provides forward secrecy and protects against offline dictionary attacks on PSKs. CCMP is the encryption (used in both WPA2 and WPA3).",
+      trap:"SAE is specific to WPA3 authentication. CCMP is the encryption algorithm used in both WPA2 and WPA3." },
+    { q:"CAPWAP tunnels traffic between a Lightweight AP (LAP) and WLC. Which ports does it use?",
+      options:["TCP 80 and TCP 443","UDP 5246 (control) and UDP 5247 (data)","UDP 1812 and UDP 1813","TCP 22 and TCP 23"], answer:1,
+      explanation:"CAPWAP: UDP 5246 = control traffic (DTLS encrypted), UDP 5247 = data traffic. The tunnel carries management and data between lightweight APs and the centralised WLC.",
+      trap:"UDP 1812/1813 = RADIUS. TCP 22/23 = SSH/Telnet. CAPWAP = UDP 5246/5247." },
+    { q:"WPA2-Personal's main weakness compared to WPA2-Enterprise?",
+      options:["WPA2-Personal uses weaker encryption (TKIP)","A single shared PSK — if leaked, all devices are compromised","WPA2-Personal does not support CCMP/AES","WPA2-Personal cannot use 802.1X"], answer:1,
+      explanation:"WPA2-Personal uses a shared PSK. One compromised device (or employee) that leaks the PSK compromises the entire network. WPA2-Enterprise uses per-user 802.1X credentials — one leak does not affect others.",
+      trap:"WPA2-Personal still uses CCMP/AES (same encryption). The weakness is the shared key model, not the encryption cipher." },
+    { q:"In Cisco wireless 'Split-MAC' architecture, which functions are handled at the LOCAL Lightweight AP?",
+      options:["Authentication, roaming decisions, RF management","Real-time functions: beacons, ACKs, probe responses, encryption/decryption","RADIUS queries and VLAN assignment","CAPWAP tunnel setup and WLC communication"], answer:1,
+      explanation:"Split-MAC: LAP handles real-time (time-sensitive) functions — beacons, ACKs, probe responses, encryption. WLC handles management functions — authentication, roaming, RF management, security policy.",
+      trap:"The LAP does the real-time radio work; the WLC does all management decisions. Not the other way around." },
+    // ORDER questions
+    { type:'order', q:"Put the Syslog severity levels in order from MOST SEVERE (top) to LEAST SEVERE (bottom):",
+      items:["0 — Emergency: System is unusable","1 — Alert: Immediate action required","2 — Critical: Critical conditions","3 — Error: Error conditions","4 — Warning: Warning conditions","5 — Notification: Normal but significant","6 — Informational: Informational messages","7 — Debug: Debug-level messages"],
+      explanation:"Syslog severities 0–7: Emergency → Alert → Critical → Error → Warning → Notification → Informational → Debug. LOWER number = MORE severe. Mnemonic: Every Awesome Cisco Engineer Will Need Ice Daily.",
+      trap:"Lower number = more severe — the opposite of what feels intuitive." },
+    { q:"TKIP was introduced as an interim fix for WEP's weaknesses. Which combination of improvements did TKIP add while STILL using RC4?",
+      options:["AES encryption plus an increased IV length","Per-packet key mixing, MIC (Michael algorithm), and broadcast key rotation","CCMP counter mode plus GHASH integrity checking","Only an increased IV from 24-bit to 48-bit with no other changes"], answer:1,
+      explanation:"TKIP added three improvements to WEP while keeping RC4: (1) Per-packet key mixing — a unique encryption key is derived per packet from the master key and IV; (2) MIC (Message Integrity Code) using the Michael algorithm — detects tampering; (3) Broadcast key rotation — periodically refreshes group keys. TKIP did NOT introduce AES — that came with WPA2/CCMP.",
+      trap:"TKIP did NOT use AES. It was a software patch running on the same RC4 hardware as WEP. AES arrived with WPA2/CCMP (a hardware upgrade)." },
+    { q:"EAP-FAST was designed by Cisco to replace the weaker LEAP. What credential mechanism does EAP-FAST use instead of digital certificates?",
+      options:["Username and password with no additional key material","PAC (Protected Access Credentials) — pre-provisioned credential files","Server-side X.509 certificate only, like PEAP","Mutual certificate authentication on both client and server, like EAP-TLS"], answer:1,
+      explanation:"EAP-FAST uses PAC (Protected Access Credentials) — pre-provisioned credential files distributed to clients, either out-of-band or via an automatic provisioning phase. This avoids the need for a full PKI certificate infrastructure while providing stronger protection than LEAP's password-only approach.",
+      trap:"PAC files are not certificates. EAP-FAST was specifically designed for environments where a full PKI is impractical. PAC ≠ cert." },
+    { q:"What is the MINIMUM certificate requirement to deploy PEAP for 802.1X wireless authentication?",
+      options:["No certificates are required — PEAP uses only pre-shared keys","Only a server-side certificate is required on the RADIUS server","Both the RADIUS server AND every wireless client must have certificates","A root CA certificate on every client, with no server certificate needed"], answer:1,
+      explanation:"PEAP requires only a server-side certificate (on the RADIUS server) to authenticate the server to the client. The client then authenticates using MS-CHAPv2 credentials inside the encrypted TLS tunnel. This makes PEAP significantly easier to deploy than EAP-TLS, which requires client certificates as well.",
+      trap:"EAP-TLS requires BOTH sides to have certificates. PEAP = server certificate only — this distinction is a frequent exam question." },
+    { type:'order', q:"Put the wireless security standards in order from OLDEST/WEAKEST to NEWEST/STRONGEST:",
+      items:["WEP — 24-bit IV, RC4+CRC32, broken 2004","WPA / TKIP — 48-bit IV, per-packet key mix, deprecated 2012","WPA2 / CCMP-AES — 802.11i, current standard","WPA3 / SAE — Dragonfly handshake, forward secrecy, latest"],
+      explanation:"Wireless security evolution: WEP (broken RC4) → WPA/TKIP (interim fix, deprecated) → WPA2/CCMP-AES (802.11i, current) → WPA3/SAE (forward secrecy, offline attack resistance). Each generation addressed the previous one's weaknesses.",
+      trap:"WPA/TKIP was a TEMPORARY fix using the same RC4 hardware as WEP. True security came with WPA2/AES (new hardware)." },
+    { type:'order', q:"Put EAP authentication methods in order from WEAKEST to STRONGEST security:",
+      items:["LEAP — Password-only, deprecated Cisco proprietary","EAP-FAST — PAC files (no certificates required)","PEAP — Server certificate only, MS-CHAPv2 inside TLS tunnel","EAP-TLS — Mutual certificate authentication (both sides)"],
+      explanation:"EAP security order: LEAP (password, easily cracked) → EAP-FAST (PAC files, no PKI needed) → PEAP (server cert only, widely deployed) → EAP-TLS (mutual certs, strongest but requires full PKI).",
+      trap:"PEAP and EAP-TLS are both 'certificate based' but PEAP only requires a SERVER cert. EAP-TLS = both sides." }
+  ]
+}
+];
+
+// ═══════════════════════════════════════════════════
+//  BUILD HOME GRID
+// ═══════════════════════════════════════════════════
+const grid = document.getElementById('topicGrid');
+let totalQ = 0;
+topics.forEach(t => {
+  totalQ += t.questions.length;
+  const card = document.createElement('div');
+  card.className = 'topic-card';
+  card.innerHTML = `<div class="tc-icon">${t.icon}</div>
+    <div class="tc-week">${t.week}</div>
+    <h3>${t.name}</h3>
+    <p>${t.desc}</p>
+    <div class="tc-footer">
+      <span class="q-count">${t.questions.length} questions</span>
+      <span class="tc-arrow">→</span>
+    </div>`;
+  card.onclick = () => startQuiz(t.id);
+  grid.appendChild(card);
+});
+document.getElementById('megaBadge').textContent = totalQ + ' Questions';
+
+// ═══════════════════════════════════════════════════
+//  QUIZ ENGINE
+// ═══════════════════════════════════════════════════
+let currentQuestions = [], currentIndex = 0, score = 0, userAnswers = [], activeTopicId = '';
+let orderState = { items:[], scrambled:[], selected:[], answered:false };
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length-1; i > 0; i--) { const j = Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
+  return a;
+}
+
+function startQuiz(topicId) {
+  activeTopicId = topicId; currentIndex = 0; score = 0; userAnswers = [];
+  if (topicId === 'mega') {
+    let all = [];
+    topics.forEach(t => t.questions.forEach(q => all.push({...q, _topicName:t.name})));
+    currentQuestions = shuffle(all);
+    document.getElementById('quizIcon').textContent = '⚡';
+    document.getElementById('quizTitle').textContent = 'Mega Quiz — All Topics';
+    document.getElementById('quizSubtitle').textContent = `${currentQuestions.length} questions across every topic`;
+  } else {
+    const t = topics.find(x => x.id === topicId);
+    currentQuestions = shuffle(t.questions.map(q => ({...q})));
+    document.getElementById('quizIcon').textContent = t.icon;
+    document.getElementById('quizTitle').textContent = t.name;
+    document.getElementById('quizSubtitle').textContent = `${t.week} · ${t.questions.length} questions`;
+  }
+  showScreen('quizScreen');
+  document.getElementById('backBtn').style.display = 'block';
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q = currentQuestions[currentIndex];
+  const total = currentQuestions.length;
+  document.getElementById('progressText').textContent = `Question ${currentIndex+1} of ${total}`;
+  document.getElementById('scoreText').textContent = `Score: ${score}`;
+  document.getElementById('progressFill').style.width = ((currentIndex/total)*100)+'%';
+  document.getElementById('qNumber').textContent = `Q${currentIndex+1}`;
+  document.getElementById('qText').textContent = q.q;
+  const badge = document.getElementById('qTypeBadge');
+  badge.innerHTML = q.type === 'order' ? '<span class="q-type-badge">Order question</span>' : '';
+  const fb = document.getElementById('feedbackBox');
+  fb.style.display = 'none'; fb.className = 'feedback-box';
+  document.getElementById('nextBtn').style.display = 'none';
+  document.getElementById('trapNote').style.display = 'none';
+  document.getElementById('correctOrderBox').style.display = 'none';
+  if (q.type === 'order') { renderOrderQuestion(q); }
+  else { renderMcqQuestion(q); }
+}
+
+// ── MCQ ──
+function renderMcqQuestion(q) {
+  document.getElementById('optionsContainer').style.display = 'flex';
+  document.getElementById('orderZone').style.display = 'none';
+  const container = document.getElementById('optionsContainer');
+  container.innerHTML = '';
+  const labels = ['A','B','C','D'];
+  const shuffled = shuffle([0,1,2,3].slice(0, q.options.length));
+  q._shuffled = shuffled;
+  q._newCorrect = shuffled.indexOf(q.answer);
+  shuffled.forEach((origIdx, newIdx) => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn';
+    btn.innerHTML = `<span class="opt-label">${labels[newIdx]}</span><span>${q.options[origIdx]}</span>`;
+    btn.onclick = () => selectMcqAnswer(newIdx, btn);
+    container.appendChild(btn);
+  });
+}
+
+function selectMcqAnswer(selectedIdx, btn) {
+  const q = currentQuestions[currentIndex];
+  const correct = q._newCorrect;
+  document.querySelectorAll('.option-btn').forEach(b => { b.classList.add('disabled'); b.onclick = null; });
+  const isCorrect = selectedIdx === correct;
+  if (isCorrect) score++;
+  userAnswers.push({ q:q.q, selected:q.options[q._shuffled[selectedIdx]], correct:q.options[q.answer], isCorrect });
+  btn.classList.add(isCorrect ? 'correct' : 'wrong');
+  if (!isCorrect) document.querySelectorAll('.option-btn')[correct].classList.add('show-correct');
+  showFeedback(q, isCorrect);
+}
+
+// ── ORDER ──
+function renderOrderQuestion(q) {
+  document.getElementById('optionsContainer').style.display = 'none';
+  const oz = document.getElementById('orderZone');
+  oz.style.display = 'block';
+  orderState = { items:[...q.items], scrambled:shuffle(q.items.map((_,i)=>i)), selected:[], answered:false };
+  document.getElementById('checkOrderBtn').style.display = 'none';
+  refreshOrderUI();
+}
+
+function refreshOrderUI() {
+  const chipsEl = document.getElementById('orderChips');
+  const seqEl = document.getElementById('orderSequence');
+  chipsEl.innerHTML = '';
+  seqEl.innerHTML = '';
+  orderState.scrambled.forEach(idx => {
+    const chip = document.createElement('button');
+    chip.className = 'order-chip' + (orderState.selected.includes(idx) ? ' used' : '');
+    chip.textContent = orderState.items[idx];
+    if (!orderState.selected.includes(idx)) chip.onclick = () => orderPick(idx);
+    chipsEl.appendChild(chip);
+  });
+  orderState.selected.forEach((idx, pos) => {
+    const item = document.createElement('div');
+    item.className = 'seq-item' + (orderState.answered ? '' : '');
+    item.innerHTML = `<span class="seq-num">${pos+1}</span><span>${orderState.items[idx]}</span>`;
+    if (!orderState.answered) item.onclick = () => orderRemove(idx);
+    seqEl.appendChild(item);
+  });
+  const btn = document.getElementById('checkOrderBtn');
+  btn.style.display = (!orderState.answered && orderState.selected.length === orderState.items.length) ? 'block' : 'none';
+}
+
+function orderPick(idx) { if (orderState.answered) return; orderState.selected.push(idx); refreshOrderUI(); }
+function orderRemove(idx) { if (orderState.answered) return; orderState.selected = orderState.selected.filter(i=>i!==idx); refreshOrderUI(); }
+
+function checkOrder() {
+  orderState.answered = true;
+  const q = currentQuestions[currentIndex];
+  const isCorrect = orderState.selected.every((idx, pos) => idx === pos);
+  if (isCorrect) score++;
+  userAnswers.push({ q:q.q, selected:orderState.selected.map(i=>q.items[i]).join(' → '), correct:q.items.join(' → '), isCorrect });
+  // Style seq items
+  document.getElementById('checkOrderBtn').style.display = 'none';
+  const seqItems = document.querySelectorAll('.seq-item');
+  orderState.selected.forEach((idx, pos) => {
+    seqItems[pos].classList.add(idx===pos ? 'seq-correct' : 'seq-wrong');
+    seqItems[pos].onclick = null;
+  });
+  // Show correct order box if wrong
+  if (!isCorrect) {
+    const box = document.getElementById('correctOrderBox');
+    box.innerHTML = '<strong>Correct order:</strong>' + q.items.map((item,i)=>`<div>${i+1}. ${item}</div>`).join('');
+    box.style.display = 'block';
+  }
+  showFeedback(q, isCorrect);
+}
+
+function showFeedback(q, isCorrect) {
+  document.getElementById('scoreText').textContent = `Score: ${score}`;
+  const fb = document.getElementById('feedbackBox');
+  fb.style.display = 'block';
+  fb.className = 'feedback-box ' + (isCorrect ? 'correct' : 'wrong');
+  document.getElementById('feedbackTitle').textContent = isCorrect ? '✓ Correct!' : '✗ Incorrect';
+  document.getElementById('feedbackExplanation').textContent = q.explanation;
+  if (q.trap) { document.getElementById('trapNote').style.display = 'block'; document.getElementById('trapText').textContent = q.trap; }
+  const nextBtn = document.getElementById('nextBtn');
+  nextBtn.style.display = 'block';
+  nextBtn.textContent = currentIndex+1 < currentQuestions.length ? 'Next Question →' : 'See Results →';
+}
+
+function nextQuestion() {
+  currentIndex++;
+  if (currentIndex >= currentQuestions.length) showResults();
+  else renderQuestion();
+}
+
+// ── RESULTS ──
+function showResults() {
+  showScreen('resultsScreen');
+  const total = currentQuestions.length;
+  const pct = Math.round((score/total)*100);
+  document.getElementById('resultPct').textContent = pct+'%';
+  document.getElementById('statCorrect').textContent = score;
+  document.getElementById('statWrong').textContent = total-score;
+  document.getElementById('statTotal').textContent = total;
+  const circle = document.getElementById('resultCircle');
+  let grade, title, sub;
+  if (pct>=85){ circle.className='result-circle excellent'; grade='🏆'; title='Excellent!'; sub='You are very well prepared.'; }
+  else if (pct>=70){ circle.className='result-circle good'; grade='👍'; title='Good Job!'; sub='Solid — review the questions you missed.'; }
+  else if (pct>=50){ circle.className='result-circle needs-work'; grade='📚'; title='Needs Practice'; sub='Go back over weak areas and retry.'; }
+  else { circle.className='result-circle poor'; grade='🔁'; title='Keep Revising'; sub='Review the topic summary then retry.'; }
+  document.getElementById('resultTitle').textContent = grade+' '+title;
+  document.getElementById('resultSub').textContent = sub;
+  const list = document.getElementById('reviewList');
+  list.innerHTML = '<div style="font-size:1rem;font-weight:700;margin-bottom:14px;text-align:left;">Review All Questions</div>';
+  userAnswers.forEach((a,i) => {
+    const div = document.createElement('div');
+    div.className = 'review-item '+(a.isCorrect?'ri-correct':'ri-wrong');
+    div.innerHTML = `<div class="ri-q">${i+1}. ${a.q}</div><div class="ri-ans">${a.isCorrect
+      ? `<span class="correct-ans">✓ ${a.correct}</span>`
+      : `<span class="wrong-ans">✗ ${a.selected}</span> → <span class="correct-ans">✓ ${a.correct}</span>`}</div>`;
+    list.appendChild(div);
+  });
+}
+
+function retryQuiz() { startQuiz(activeTopicId); }
+function goHome() { showScreen('homeScreen'); document.getElementById('backBtn').style.display='none'; }
+function showScreen(id) { document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); document.getElementById(id).classList.add('active'); window.scrollTo(0,0); }
+</script>
+</body>
+</html>
